@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package auth;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "proto/authpb";
+
+service AuthService {
+  rpc Register (RegisterRequest) returns (AuthResponse);
+  rpc Login (LoginRequest) returns (AuthResponse);
+  rpc Refresh (RefreshRequest) returns (AuthResponse);
+  rpc Ping (google.protobuf.Empty) returns (PingResponse);
+}
+
+// Requests
+message RegisterRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message LoginRequest {
+  oneof login_method{
+    string username = 1;
+    string email = 2;
+  }
+  string password = 3;
+}
+
+message RefreshRequest {
+  string access_token = 1;
+}
+
+// Responses
+message AuthResponse {
+  string access_token = 1;
+  string error = 2;
+}
+
+message PingResponse {
+  string status = 1;
+}

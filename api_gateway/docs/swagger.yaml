@@ -1,0 +1,61 @@
+basePath: /api/v1
+definitions:
+  models.Login:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.Register:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  title: Messenger API
+  version: "0.1"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные для входа
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Login'
+      produces:
+      - application/json
+      responses: {}
+      summary: Авторизация
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные регистрации
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Register'
+      produces:
+      - application/json
+      responses: {}
+      summary: Регистрация
+      tags:
+      - auth
+swagger: "2.0"

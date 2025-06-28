@@ -1,0 +1,14 @@
+go 1.24.2
+
+use (
+	./api_gateway
+	./auth
+	./cache
+	./database
+	./errs
+	./message
+	./notifications
+	./proto
+	./search
+	./smtp
+)

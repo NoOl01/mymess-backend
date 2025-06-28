@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package database;
+
+option go_package = "proto/databasepb";
+
+service DatabaseService {
+
+  rpc Register (CreateNewUserRequest) returns (CreateNewUserResponse);
+  rpc Login (LoginUserRequest) returns (LoginUserResponse);
+
+}
+
+message CreateNewUserRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message CreateNewUserResponse {
+  string result = 1;
+}
+
+message LoginUserRequest {
+  oneof login_method {
+    string username = 1;
+    string email = 2;
+  }
+  string password = 3;
+}
+
+message LoginUserResponse {
+  string result = 1;
+  string error = 2;
+}

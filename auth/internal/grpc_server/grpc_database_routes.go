@@ -7,6 +7,8 @@ import (
 	"fmt"
 	pb "proto/authpb"
 	"proto/databasepb"
+	"results/errs"
+	"results/succ"
 )
 
 type Server struct {
@@ -31,7 +33,7 @@ func (s *Server) Register(_ context.Context, req *pb.RegisterRequest) (*pb.AuthR
 		return nil, err
 	}
 
-	if resp.Result != "Ok" {
+	if resp.Result != succ.RecordCreated {
 		return nil, fmt.Errorf(resp.Result)
 	}
 
@@ -46,11 +48,31 @@ func (s *Server) Register(_ context.Context, req *pb.RegisterRequest) (*pb.AuthR
 	}, nil
 }
 
-func (s *Server) LoginUser(_ context.Context, req *pb.LoginRequest) (*pb.AuthResponse, error) {
-	// todo
+func (s *Server) Login(_ context.Context, req *pb.LoginRequest) (*pb.AuthResponse, error) {
+	var dbUsername, dbEmail string
 
-	return &pb.AuthResponse{
-		AccessToken: "Ok",
-		Error:       "",
-	}, nil
+	switch login := req.LoginMethod.(type) {
+	case *pb.LoginRequest_Email:
+		dbEmail = login.Email
+	case *pb.LoginRequest_Username:
+		dbUsername = login.Username
+	default:
+		return &pb.AuthResponse{Error: errs.InvalidRequestBody.Error()}, errs.InvalidRequestBody
+	}
+
+	resp, err := grpc_client.CheckUser(s.Client, dbUsername, dbEmail, req.GetPassword())
+	if err != nil {
+		return &pb.AuthResponse{Error: err.Error()}, err
+	}
+
+	if resp.Result != succ.Ok {
+		return &pb.AuthResponse{Error: resp.Result}, fmt.Errorf(resp.Result)
+	}
+
+	token, err := jwt.GenerateToken()
+	if err != nil {
+		return &pb.AuthResponse{Error: err.Error()}, err
+	}
+
+	return &pb.AuthResponse{AccessToken: token}, nil
 }

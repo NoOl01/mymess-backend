@@ -2,8 +2,8 @@ package api_grpc_client
 
 import (
 	"context"
-	"errs"
 	"proto/authpb"
+	"results/errs"
 	"time"
 )
 
@@ -30,18 +30,18 @@ func LoginRequest(client authpb.AuthServiceClient, username, email, password str
 	var loginReq *authpb.LoginRequest
 
 	switch {
-	case username != "":
-		loginReq = &authpb.LoginRequest{
-			LoginMethod: &authpb.LoginRequest_Username{Username: username},
-			Password:    password,
-		}
 	case email != "":
 		loginReq = &authpb.LoginRequest{
 			LoginMethod: &authpb.LoginRequest_Email{Email: email},
 			Password:    password,
 		}
+	case username != "":
+		loginReq = &authpb.LoginRequest{
+			LoginMethod: &authpb.LoginRequest_Username{Username: username},
+			Password:    password,
+		}
 	default:
-		return nil, errs.AuthLoginInvalidBody
+		return nil, errs.InvalidRequestBody
 	}
 
 	resp, err := client.Login(ctx, loginReq)

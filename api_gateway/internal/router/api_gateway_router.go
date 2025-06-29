@@ -25,6 +25,6 @@ func Router(router *gin.Engine, client authpb.AuthServiceClient) {
 			api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		}
 
-		api.GET("/ping", controllers2.Ping{}.Ping)
+		//api.GET("/ping", controllers2.Ping{}.Ping)
 	}
 }

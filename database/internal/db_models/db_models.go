@@ -5,7 +5,7 @@ import "time"
 type User struct {
 	Id           int64       `gorm:"primaryKey;autoIncrement" json:"id"`
 	Nickname     string      `gorm:"not null;size:30" json:"nickname"`
-	Username     string      `gorm:"unique;not null;size:30" json:"username"`
+	Username     string      `gorm:"size:30" json:"username"`
 	Email        string      `gorm:"unique;not null;size:50" json:"email"`
 	Password     string      `gorm:"not null;" json:"password"`
 	AvatarPath   string      `gorm:"size:255" json:"avatar_path"`

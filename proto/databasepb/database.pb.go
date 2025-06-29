@@ -9,6 +9,7 @@ package databasepb
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -23,7 +24,7 @@ const (
 
 type CreateNewUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Nickname      string                 `protobuf:"bytes,1,opt,name=nickname,proto3" json:"nickname,omitempty"`
 	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -60,9 +61,9 @@ func (*CreateNewUserRequest) Descriptor() ([]byte, []int) {
 	return file_proto_database_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateNewUserRequest) GetUsername() string {
+func (x *CreateNewUserRequest) GetNickname() string {
 	if x != nil {
-		return x.Username
+		return x.Nickname
 	}
 	return ""
 }
@@ -81,50 +82,6 @@ func (x *CreateNewUserRequest) GetPassword() string {
 	return ""
 }
 
-type CreateNewUserResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Result        string                 `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateNewUserResponse) Reset() {
-	*x = CreateNewUserResponse{}
-	mi := &file_proto_database_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateNewUserResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateNewUserResponse) ProtoMessage() {}
-
-func (x *CreateNewUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_database_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateNewUserResponse.ProtoReflect.Descriptor instead.
-func (*CreateNewUserResponse) Descriptor() ([]byte, []int) {
-	return file_proto_database_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *CreateNewUserResponse) GetResult() string {
-	if x != nil {
-		return x.Result
-	}
-	return ""
-}
-
 type LoginUserRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to LoginMethod:
@@ -139,7 +96,7 @@ type LoginUserRequest struct {
 
 func (x *LoginUserRequest) Reset() {
 	*x = LoginUserRequest{}
-	mi := &file_proto_database_proto_msgTypes[2]
+	mi := &file_proto_database_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -151,7 +108,7 @@ func (x *LoginUserRequest) String() string {
 func (*LoginUserRequest) ProtoMessage() {}
 
 func (x *LoginUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_database_proto_msgTypes[2]
+	mi := &file_proto_database_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -164,7 +121,7 @@ func (x *LoginUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginUserRequest.ProtoReflect.Descriptor instead.
 func (*LoginUserRequest) Descriptor() ([]byte, []int) {
-	return file_proto_database_proto_rawDescGZIP(), []int{2}
+	return file_proto_database_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *LoginUserRequest) GetLoginMethod() isLoginUserRequest_LoginMethod {
@@ -215,28 +172,72 @@ func (*LoginUserRequest_Username) isLoginUserRequest_LoginMethod() {}
 
 func (*LoginUserRequest_Email) isLoginUserRequest_LoginMethod() {}
 
-type LoginUserResponse struct {
+// Responses
+type AuthResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Result        string                 `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LoginUserResponse) Reset() {
-	*x = LoginUserResponse{}
+func (x *AuthResponse) Reset() {
+	*x = AuthResponse{}
+	mi := &file_proto_database_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthResponse) ProtoMessage() {}
+
+func (x *AuthResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_database_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthResponse.ProtoReflect.Descriptor instead.
+func (*AuthResponse) Descriptor() ([]byte, []int) {
+	return file_proto_database_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AuthResponse) GetResult() string {
+	if x != nil {
+		return x.Result
+	}
+	return ""
+}
+
+type PingResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        string                 `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PingResponse) Reset() {
+	*x = PingResponse{}
 	mi := &file_proto_database_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LoginUserResponse) String() string {
+func (x *PingResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LoginUserResponse) ProtoMessage() {}
+func (*PingResponse) ProtoMessage() {}
 
-func (x *LoginUserResponse) ProtoReflect() protoreflect.Message {
+func (x *PingResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_database_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -248,21 +249,14 @@ func (x *LoginUserResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LoginUserResponse.ProtoReflect.Descriptor instead.
-func (*LoginUserResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use PingResponse.ProtoReflect.Descriptor instead.
+func (*PingResponse) Descriptor() ([]byte, []int) {
 	return file_proto_database_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *LoginUserResponse) GetResult() string {
+func (x *PingResponse) GetStatus() string {
 	if x != nil {
-		return x.Result
-	}
-	return ""
-}
-
-func (x *LoginUserResponse) GetError() string {
-	if x != nil {
-		return x.Error
+		return x.Status
 	}
 	return ""
 }
@@ -271,24 +265,24 @@ var File_proto_database_proto protoreflect.FileDescriptor
 
 const file_proto_database_proto_rawDesc = "" +
 	"\n" +
-	"\x14proto/database.proto\x12\bdatabase\"d\n" +
+	"\x14proto/database.proto\x12\bdatabase\x1a\x1bgoogle/protobuf/empty.proto\"d\n" +
 	"\x14CreateNewUserRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x14\n" +
+	"\bnickname\x18\x01 \x01(\tR\bnickname\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x03 \x01(\tR\bpassword\"/\n" +
-	"\x15CreateNewUserResponse\x12\x16\n" +
-	"\x06result\x18\x01 \x01(\tR\x06result\"t\n" +
+	"\bpassword\x18\x03 \x01(\tR\bpassword\"t\n" +
 	"\x10LoginUserRequest\x12\x1c\n" +
 	"\busername\x18\x01 \x01(\tH\x00R\busername\x12\x16\n" +
 	"\x05email\x18\x02 \x01(\tH\x00R\x05email\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpasswordB\x0e\n" +
-	"\flogin_method\"A\n" +
-	"\x11LoginUserResponse\x12\x16\n" +
-	"\x06result\x18\x01 \x01(\tR\x06result\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error2\xa0\x01\n" +
-	"\x0fDatabaseService\x12K\n" +
-	"\bRegister\x12\x1e.database.CreateNewUserRequest\x1a\x1f.database.CreateNewUserResponse\x12@\n" +
-	"\x05Login\x12\x1a.database.LoginUserRequest\x1a\x1b.database.LoginUserResponseB\x12Z\x10proto/databasepbb\x06proto3"
+	"\flogin_method\"&\n" +
+	"\fAuthResponse\x12\x16\n" +
+	"\x06result\x18\x01 \x01(\tR\x06result\"&\n" +
+	"\fPingResponse\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status2\xca\x01\n" +
+	"\x0fDatabaseService\x12B\n" +
+	"\bRegister\x12\x1e.database.CreateNewUserRequest\x1a\x16.database.AuthResponse\x12;\n" +
+	"\x05Login\x12\x1a.database.LoginUserRequest\x1a\x16.database.AuthResponse\x126\n" +
+	"\x04Ping\x12\x16.google.protobuf.Empty\x1a\x16.database.PingResponseB\x12Z\x10proto/databasepbb\x06proto3"
 
 var (
 	file_proto_database_proto_rawDescOnce sync.Once
@@ -304,18 +298,21 @@ func file_proto_database_proto_rawDescGZIP() []byte {
 
 var file_proto_database_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_database_proto_goTypes = []any{
-	(*CreateNewUserRequest)(nil),  // 0: database.CreateNewUserRequest
-	(*CreateNewUserResponse)(nil), // 1: database.CreateNewUserResponse
-	(*LoginUserRequest)(nil),      // 2: database.LoginUserRequest
-	(*LoginUserResponse)(nil),     // 3: database.LoginUserResponse
+	(*CreateNewUserRequest)(nil), // 0: database.CreateNewUserRequest
+	(*LoginUserRequest)(nil),     // 1: database.LoginUserRequest
+	(*AuthResponse)(nil),         // 2: database.AuthResponse
+	(*PingResponse)(nil),         // 3: database.PingResponse
+	(*emptypb.Empty)(nil),        // 4: google.protobuf.Empty
 }
 var file_proto_database_proto_depIdxs = []int32{
 	0, // 0: database.DatabaseService.Register:input_type -> database.CreateNewUserRequest
-	2, // 1: database.DatabaseService.Login:input_type -> database.LoginUserRequest
-	1, // 2: database.DatabaseService.Register:output_type -> database.CreateNewUserResponse
-	3, // 3: database.DatabaseService.Login:output_type -> database.LoginUserResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	1, // 1: database.DatabaseService.Login:input_type -> database.LoginUserRequest
+	4, // 2: database.DatabaseService.Ping:input_type -> google.protobuf.Empty
+	2, // 3: database.DatabaseService.Register:output_type -> database.AuthResponse
+	2, // 4: database.DatabaseService.Login:output_type -> database.AuthResponse
+	3, // 5: database.DatabaseService.Ping:output_type -> database.PingResponse
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -326,7 +323,7 @@ func file_proto_database_proto_init() {
 	if File_proto_database_proto != nil {
 		return
 	}
-	file_proto_database_proto_msgTypes[2].OneofWrappers = []any{
+	file_proto_database_proto_msgTypes[1].OneofWrappers = []any{
 		(*LoginUserRequest_Username)(nil),
 		(*LoginUserRequest_Email)(nil),
 	}

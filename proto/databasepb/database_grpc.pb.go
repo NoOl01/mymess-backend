@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,14 +22,16 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	DatabaseService_Register_FullMethodName = "/database.DatabaseService/Register"
 	DatabaseService_Login_FullMethodName    = "/database.DatabaseService/Login"
+	DatabaseService_Ping_FullMethodName     = "/database.DatabaseService/Ping"
 )
 
 // DatabaseServiceClient is the client API for DatabaseService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DatabaseServiceClient interface {
-	Register(ctx context.Context, in *CreateNewUserRequest, opts ...grpc.CallOption) (*CreateNewUserResponse, error)
-	Login(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
+	Register(ctx context.Context, in *CreateNewUserRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	Login(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PingResponse, error)
 }
 
 type databaseServiceClient struct {
@@ -39,9 +42,9 @@ func NewDatabaseServiceClient(cc grpc.ClientConnInterface) DatabaseServiceClient
 	return &databaseServiceClient{cc}
 }
 
-func (c *databaseServiceClient) Register(ctx context.Context, in *CreateNewUserRequest, opts ...grpc.CallOption) (*CreateNewUserResponse, error) {
+func (c *databaseServiceClient) Register(ctx context.Context, in *CreateNewUserRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateNewUserResponse)
+	out := new(AuthResponse)
 	err := c.cc.Invoke(ctx, DatabaseService_Register_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -49,9 +52,9 @@ func (c *databaseServiceClient) Register(ctx context.Context, in *CreateNewUserR
 	return out, nil
 }
 
-func (c *databaseServiceClient) Login(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error) {
+func (c *databaseServiceClient) Login(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LoginUserResponse)
+	out := new(AuthResponse)
 	err := c.cc.Invoke(ctx, DatabaseService_Login_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -59,12 +62,23 @@ func (c *databaseServiceClient) Login(ctx context.Context, in *LoginUserRequest,
 	return out, nil
 }
 
-// DatabaseServiceServer is the grpc_server API for DatabaseService service.
+func (c *databaseServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PingResponse)
+	err := c.cc.Invoke(ctx, DatabaseService_Ping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// DatabaseServiceServer is the server API for DatabaseService service.
 // All implementations must embed UnimplementedDatabaseServiceServer
 // for forward compatibility.
 type DatabaseServiceServer interface {
-	Register(context.Context, *CreateNewUserRequest) (*CreateNewUserResponse, error)
-	Login(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
+	Register(context.Context, *CreateNewUserRequest) (*AuthResponse, error)
+	Login(context.Context, *LoginUserRequest) (*AuthResponse, error)
+	Ping(context.Context, *emptypb.Empty) (*PingResponse, error)
 	mustEmbedUnimplementedDatabaseServiceServer()
 }
 
@@ -75,18 +89,21 @@ type DatabaseServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedDatabaseServiceServer struct{}
 
-func (UnimplementedDatabaseServiceServer) Register(context.Context, *CreateNewUserRequest) (*CreateNewUserResponse, error) {
+func (UnimplementedDatabaseServiceServer) Register(context.Context, *CreateNewUserRequest) (*AuthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedDatabaseServiceServer) Login(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
+func (UnimplementedDatabaseServiceServer) Login(context.Context, *LoginUserRequest) (*AuthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedDatabaseServiceServer) Ping(context.Context, *emptypb.Empty) (*PingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (UnimplementedDatabaseServiceServer) mustEmbedUnimplementedDatabaseServiceServer() {}
 func (UnimplementedDatabaseServiceServer) testEmbeddedByValue()                         {}
 
 // UnsafeDatabaseServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to DatabaseServiceServer will
-// result in compilation errs.
+// result in compilation errors.
 type UnsafeDatabaseServiceServer interface {
 	mustEmbedUnimplementedDatabaseServiceServer()
 }
@@ -138,6 +155,24 @@ func _DatabaseService_Login_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatabaseService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseServiceServer).Ping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatabaseService_Ping_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseServiceServer).Ping(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DatabaseService_ServiceDesc is the grpc.ServiceDesc for DatabaseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +187,10 @@ var DatabaseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _DatabaseService_Login_Handler,
+		},
+		{
+			MethodName: "Ping",
+			Handler:    _DatabaseService_Ping_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

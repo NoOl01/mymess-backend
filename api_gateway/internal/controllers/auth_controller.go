@@ -3,10 +3,10 @@ package controllers
 import (
 	"api_gateway/internal/api_grpc_client"
 	"api_gateway/internal/models"
-	"errs"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"proto/authpb"
+	"results/errs"
 )
 
 type Controller struct {
@@ -72,7 +72,7 @@ func (auth *Controller) LoginController(c *gin.Context) {
 	if (body.Username == nil || body.Email == nil) && body.Password == "" {
 		c.JSON(http.StatusBadRequest, models.AuthResult{
 			Result: nil,
-			Error:  strPointer(errs.AuthLoginInvalidBody.Error()),
+			Error:  strPointer(errs.InvalidRequestBody.Error()),
 		})
 		return
 	}

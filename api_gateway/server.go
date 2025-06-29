@@ -4,13 +4,14 @@ import (
 	"api_gateway/internal/api_grpc_client"
 	"api_gateway/internal/api_storage"
 	"api_gateway/internal/router"
-	"errs"
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 	"log"
 	"os"
 	"os/signal"
+	"results/errs"
 	"syscall"
 )
 
@@ -28,11 +29,19 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	client, err := api_grpc_client.GrpcClientConnect()
+	client, conn, err := api_grpc_client.GrpcClientConnect()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
+	defer func(conn *grpc.ClientConn) {
+		err := conn.Close()
+		if err != nil {
+			fmt.Printf("%s, %v \n", errs.GrpcClientCloseFailed, err)
+			return
+		}
+	}(conn)
 
 	router.Router(r, client)
 

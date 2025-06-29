@@ -5,7 +5,7 @@ use (
 	./auth
 	./cache
 	./database
-	./errs
+	./results
 	./message
 	./notifications
 	./proto

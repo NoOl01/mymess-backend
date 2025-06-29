@@ -1,0 +1,39 @@
+services:
+  api_gateway:
+    build:
+      context: .
+      dockerfile: api_gateway/Dockerfile
+    ports:
+      - "8080:8080"
+
+  database:
+    build:
+      context: .
+      dockerfile: database/Dockerfile
+    ports:
+      - "50051:50051"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  auth:
+    build:
+      context: .
+      dockerfile: auth/Dockerfile
+    ports:
+      - "50052:50052"
+
+  postgres:
+    image: postgres:15-alpine
+    env_file:
+      - ./postgres.env
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust # УДАЛИТЬ
+
+
+volumes:
+  pgdata:

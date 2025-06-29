@@ -2,17 +2,17 @@ package grpc_client
 
 import (
 	"auth/internal/storage"
-	"errs"
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	databasebp "proto/databasepb"
+	"results/errs"
 )
 
 func GrpcClientConnect() (databasebp.DatabaseServiceClient, *grpc.ClientConn, error) {
 	gRpcConn, err := grpc.NewClient(
-		fmt.Sprintf("dns:///localhost:%s", storage.Env.DatabasePort),
+		fmt.Sprintf("%s:%s", storage.Env.DatabaseHost, storage.Env.DatabasePort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {

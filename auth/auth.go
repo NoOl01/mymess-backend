@@ -2,16 +2,17 @@ package main
 
 import (
 	grpcclientconnect "auth/internal/grpc_client"
+	"auth/internal/grpc_server"
 	"auth/internal/storage"
-	"database/routes"
-	"errs"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/grpclog"
 	"log"
 	"net"
 	"os"
 	"os/signal"
-	pb "proto/databasepb"
+	pb "proto/authpb"
+	"results/errs"
 	"syscall"
 )
 
@@ -35,8 +36,12 @@ func main() {
 		log.Fatalf("%s: %v", errs.FailedListen, err)
 	}
 
+	grpclog.SetLoggerV2(grpclog.NewLoggerV2(os.Stdout, os.Stderr, os.Stderr))
+
 	server := grpc.NewServer()
-	pb.RegisterDatabaseServiceServer(server, &routes.Server{})
+	pb.RegisterAuthServiceServer(server, &grpc_server.Server{
+		Client: client,
+	})
 
 	serverErr := make(chan error, 1)
 	go func() {

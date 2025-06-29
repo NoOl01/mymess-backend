@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"api_gateway/models"
+	"api_gateway/internal/models"
 	"github.com/gin-gonic/gin"
 )
 

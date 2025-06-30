@@ -24,3 +24,22 @@ var (
 	RecordNotFound        = errors.New("record not found")
 	RecordAlreadyExists   = errors.New("record already exists")
 )
+
+// JWT
+var (
+	InvalidToken           = errors.New("invalid token")
+	InvalidTokenClaimsType = errors.New("invalid claims type")
+	InvalidOrMissingClaim  = errors.New("invalid or missing claim")
+	UnexpectedSignMethod   = errors.New("unexpected signing method")
+	MissingToken           = errors.New("missing token")
+)
+
+// WebSocket
+var (
+	WSClientCloseFailed    = errors.New("failed to close client connection")
+	WsUpgradeFailed        = errors.New("failed to upgrade websocket")
+	WsDecodeJsonFailed     = errors.New("failed to decode json")
+	WsListenAndServeFailed = errors.New("failed to listen and serve")
+)
+
+// @XYZ_q2

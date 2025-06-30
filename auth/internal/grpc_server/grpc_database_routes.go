@@ -37,7 +37,7 @@ func (s *Server) Register(_ context.Context, req *pb.RegisterRequest) (*pb.AuthR
 		return nil, fmt.Errorf(resp.Result)
 	}
 
-	token, err := jwt.GenerateToken()
+	token, err := jwt.GenerateToken(resp.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (s *Server) Login(_ context.Context, req *pb.LoginRequest) (*pb.AuthRespons
 		return &pb.AuthResponse{Error: resp.Result}, fmt.Errorf(resp.Result)
 	}
 
-	token, err := jwt.GenerateToken()
+	token, err := jwt.GenerateToken(resp.UserId)
 	if err != nil {
 		return &pb.AuthResponse{Error: err.Error()}, err
 	}

@@ -23,6 +23,13 @@ services:
     ports:
       - "50052:50052"
 
+  message:
+    build:
+      context: .
+      dockerfile: message/Dockerfile
+    ports:
+      - "8000:8000"
+
   postgres:
     image: postgres:15-alpine
     env_file:

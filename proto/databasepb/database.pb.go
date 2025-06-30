@@ -175,7 +175,8 @@ func (*LoginUserRequest_Email) isLoginUserRequest_LoginMethod() {}
 // Responses
 type AuthResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Result        string                 `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	Result        string                 `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -208,6 +209,13 @@ func (x *AuthResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use AuthResponse.ProtoReflect.Descriptor instead.
 func (*AuthResponse) Descriptor() ([]byte, []int) {
 	return file_proto_database_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AuthResponse) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
 }
 
 func (x *AuthResponse) GetResult() string {
@@ -274,9 +282,10 @@ const file_proto_database_proto_rawDesc = "" +
 	"\busername\x18\x01 \x01(\tH\x00R\busername\x12\x16\n" +
 	"\x05email\x18\x02 \x01(\tH\x00R\x05email\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpasswordB\x0e\n" +
-	"\flogin_method\"&\n" +
+	"\flogin_method\">\n" +
 	"\fAuthResponse\x12\x16\n" +
-	"\x06result\x18\x01 \x01(\tR\x06result\"&\n" +
+	"\x06userId\x18\x01 \x01(\tR\x06userId\x12\x16\n" +
+	"\x06result\x18\x02 \x01(\tR\x06result\"&\n" +
 	"\fPingResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status2\xca\x01\n" +
 	"\x0fDatabaseService\x12B\n" +

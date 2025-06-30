@@ -10,6 +10,7 @@ import (
 	pb "proto/databasepb"
 	"results/errs"
 	"results/succ"
+	"strconv"
 	"time"
 )
 
@@ -25,6 +26,7 @@ func (s *Server) Register(_ context.Context, req *pb.CreateNewUserRequest) (*pb.
 
 	if nickname == "" || email == "" || password == "" {
 		return &pb.AuthResponse{
+			UserId: "",
 			Result: errs.InvalidRequestBody.Error(),
 		}, nil
 	}
@@ -37,31 +39,38 @@ func (s *Server) Register(_ context.Context, req *pb.CreateNewUserRequest) (*pb.
 			hash, err := bcrypt.Encrypt(password)
 			if err != nil {
 				return &pb.AuthResponse{
+					UserId: "",
 					Result: err.Error(),
 				}, err
 			}
 
-			if err := s.Db.Create(&db_models.User{
+			user = db_models.User{
 				Nickname:     nickname,
 				Email:        email,
 				Password:     hash,
 				Deleted:      false,
 				RegisterDate: time.Now(),
-			}).Error; err != nil {
+			}
+
+			if err := s.Db.Create(&user).Error; err != nil {
 				return &pb.AuthResponse{
+					UserId: "",
 					Result: errs.FailedCreateRecord.Error(),
 				}, err
 			}
 			return &pb.AuthResponse{
+				UserId: strconv.FormatInt(user.Id, 10),
 				Result: succ.RecordCreated,
 			}, nil
 		}
 		return &pb.AuthResponse{
+			UserId: "",
 			Result: errs.FailedReadRecord.Error(),
 		}, err
 	}
 
 	return &pb.AuthResponse{
+		UserId: strconv.FormatInt(user.Id, 10),
 		Result: errs.RecordAlreadyExists.Error(),
 	}, nil
 }
@@ -76,14 +85,20 @@ func (s *Server) Login(_ context.Context, req *pb.LoginUserRequest) (*pb.AuthRes
 	case *pb.LoginUserRequest_Email:
 		err = checkRecord(s.Db, "email", login.Email, &user)
 	default:
-		return nil, errs.InvalidRequestBody
+		return &pb.AuthResponse{
+			UserId: "",
+			Result: errs.InvalidRequestBody.Error(),
+		}, errs.InvalidRequestBody
 	}
 
 	if err != nil {
 		if errors.Is(err, errs.RecordNotFound) {
 			return nil, errs.RecordNotFound
 		}
-		return nil, err
+		return &pb.AuthResponse{
+			UserId: "",
+			Result: errs.RecordNotFound.Error(),
+		}, err
 	}
 
 	if err := bcrypt.ValidatePassword(user, req.GetPassword()); err != nil {
@@ -91,6 +106,7 @@ func (s *Server) Login(_ context.Context, req *pb.LoginUserRequest) (*pb.AuthRes
 	}
 
 	return &pb.AuthResponse{
+		UserId: strconv.FormatInt(user.Id, 10),
 		Result: succ.Ok,
 	}, nil
 }

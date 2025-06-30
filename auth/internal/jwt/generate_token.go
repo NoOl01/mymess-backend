@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-func GenerateToken() (string, error) {
+func GenerateToken(userId string) (string, error) {
 	key := []byte(storage.Env.JwtSecret)
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"Id":  "1",
+		"sub": userId,
 		"exp": time.Now().Add(30 * 24 * time.Hour).Unix(),
 	})
 

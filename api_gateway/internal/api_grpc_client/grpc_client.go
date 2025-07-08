@@ -12,7 +12,7 @@ func RegisterRequest(client authpb.AuthServiceClient, username, email, password 
 	defer cancel()
 
 	resp, err := client.Register(ctx, &authpb.RegisterRequest{
-		Username: username,
+		Nickname: username,
 		Email:    email,
 		Password: password,
 	})
@@ -45,6 +45,65 @@ func LoginRequest(client authpb.AuthServiceClient, username, email, password str
 	}
 
 	resp, err := client.Login(ctx, loginReq)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func RefreshRequest(client authpb.AuthServiceClient, accessToken string) (*authpb.AuthResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := client.Refresh(ctx, &authpb.RefreshRequest{
+		AccessToken: accessToken,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func SendOtp(client authpb.AuthServiceClient, email string) (*authpb.BaseResultResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := client.SendOtp(ctx, &authpb.SendOtpRequest{
+		Email: email,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func ResetPassword(client authpb.AuthServiceClient, email string, code int32) (*authpb.ResetPasswordResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := client.ResetPassword(ctx, &authpb.ResetPasswordRequest{
+		Email: email,
+		Code:  code,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func UpdatePassword(client authpb.AuthServiceClient, email, password, resetToken string) (*authpb.BaseResultResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := client.UpdatePassword(ctx, &authpb.UpdatePasswordRequest{
+		Email:      email,
+		Password:   password,
+		ResetToken: resetToken,
+	})
 	if err != nil {
 		return nil, err
 	}

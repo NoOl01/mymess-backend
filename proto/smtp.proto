@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package smtp;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "proto/smtppb";
+
+service SmtpService {
+  rpc SendOtp (SendOtpRequest) returns (BaseResultResponse);
+
+  rpc Ping (google.protobuf.Empty) returns (BaseResultResponse);
+}
+
+// Requests
+message SendOtpRequest{
+  string email = 1;
+  int32 code = 2;
+}
+
+// Responses
+message BaseResultResponse {
+  string result = 1;
+}

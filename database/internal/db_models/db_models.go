@@ -16,7 +16,15 @@ type User struct {
 	UserThemes   []UserTheme `gorm:"foreignKey:UserId" json:"user_themes"`
 }
 
+type DeviceToken struct {
+	Id     int64  `gorm:"primaryKey;autoIncrement" json:"id"`
+	UserId int    `gorm:"not null;" json:"user_id"`
+	User   User   `gorm:"foreignKey:UserId" json:"-"`
+	Token  string `gorm:"not null" json:"token"`
+}
+
 type Chat struct {
+	Id            int64     `gorm:"primaryKey;autoIncrement" json:"id"`
 	UserId        int64     `gorm:"not null;index:idx_user_peer" json:"user_id"`
 	User          *User     `gorm:"foreignKey:UserId" json:"-"`
 	PeerId        int64     `gorm:"not null;index:idx_user_peer" json:"peer_id"`
@@ -39,8 +47,14 @@ type Message struct {
 }
 
 type UserTheme struct {
-	Id                      int64  `gorm:"primaryKey;autoIncrement" json:"id"`
-	UserId                  int64  `gorm:"not null;" json:"user_id"`
-	User                    User   `gorm:"foreignKey:UserId" json:"user"`
-	ChatBackgroundImagePath string `gorm:"size:255" json:"chat_background_image_path"`
+	Id                              int64  `gorm:"primaryKey;autoIncrement" json:"id"`
+	UserId                          int64  `gorm:"not null;" json:"user_id"`
+	User                            User   `gorm:"foreignKey:UserId" json:"user"`
+	ThemeName                       string `gorm:"size:60" json:"theme_name"`
+	ChatBackgroundImagePath         string `gorm:"size:255" json:"chat_background_image_path"`
+	AccentColor                     string `gorm:"size:50" json:"accent_color"`
+	BackgroundColor                 string `gorm:"size:50" json:"background_color"`
+	ChatUserBackgroundColor         string `gorm:"size:50" json:"chat_user_background_color"`
+	ChatInterlocutorBackgroundColor string `gorm:"size:50" json:"chat_interlocutor_background_color"`
+	TextColor                       string `gorm:"size:50" json:"text_color"`
 }

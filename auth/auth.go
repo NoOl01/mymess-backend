@@ -6,7 +6,6 @@ import (
 	"auth/internal/storage"
 	"fmt"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/grpclog"
 	"log"
 	"net"
 	"os"
@@ -19,7 +18,11 @@ import (
 func main() {
 	storage.LoadEnv()
 
-	client, conn, err := grpcclientconnect.GrpcClientConnect()
+	dbClient, dbConn, err := grpcclientconnect.GrpcDatabaseClientConnect()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	smtpClient, smtpConn, err := grpcclientconnect.GrpcSmtpClientConnect()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -29,18 +32,24 @@ func main() {
 		if err != nil {
 			log.Fatalf("%s: %v", errs.GrpcClientCloseFailed, err)
 		}
-	}(conn)
+	}(dbConn)
+
+	defer func(conn *grpc.ClientConn) {
+		err := conn.Close()
+		if err != nil {
+			log.Fatalf("%s: %v", errs.GrpcClientCloseFailed, err)
+		}
+	}(smtpConn)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", storage.Env.AuthPort))
 	if err != nil {
 		log.Fatalf("%s: %v", errs.FailedListen, err)
 	}
 
-	grpclog.SetLoggerV2(grpclog.NewLoggerV2(os.Stdout, os.Stderr, os.Stderr))
-
 	server := grpc.NewServer()
 	pb.RegisterAuthServiceServer(server, &grpc_server.Server{
-		Client: client,
+		Client:     dbClient,
+		SmtpClient: smtpClient,
 	})
 
 	serverErr := make(chan error, 1)

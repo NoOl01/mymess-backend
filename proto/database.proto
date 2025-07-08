@@ -9,9 +9,12 @@ option go_package = "proto/databasepb";
 service DatabaseService {
   rpc Register (CreateNewUserRequest) returns (AuthResponse);
   rpc Login (LoginUserRequest) returns (AuthResponse);
-  rpc Ping (google.protobuf.Empty) returns (PingResponse);
+  rpc UpdatePassword (UpdatePasswordRequest) returns (BaseResultResponse);
+
+  rpc Ping (google.protobuf.Empty) returns (BaseResultResponse);
 }
 
+// Requests
 message CreateNewUserRequest {
   string nickname = 1;
   string email = 2;
@@ -26,12 +29,17 @@ message LoginUserRequest {
   string password = 3;
 }
 
+message UpdatePasswordRequest {
+  string email = 1;
+  string password = 2;
+}
+
 // Responses
+message BaseResultResponse {
+  string result = 1;
+}
+
 message AuthResponse {
   string userId = 1;
   string result = 2;
-}
-
-message PingResponse {
-  string status = 1;
 }

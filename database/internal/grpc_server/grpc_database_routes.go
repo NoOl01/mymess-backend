@@ -6,6 +6,7 @@ import (
 	"database/internal/db_models"
 	"errors"
 	"fmt"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
 	pb "proto/databasepb"
 	"results/errs"
@@ -111,6 +112,35 @@ func (s *Server) Login(_ context.Context, req *pb.LoginUserRequest) (*pb.AuthRes
 	}, nil
 }
 
+func (s *Server) UpdatePassword(_ context.Context, req *pb.UpdatePasswordRequest) (*pb.BaseResultResponse, error) {
+	email := req.GetEmail()
+	pass := req.GetPassword()
+
+	var user db_models.User
+	if err := checkRecord(s.Db, "email", email, &user); err != nil {
+		return &pb.BaseResultResponse{
+			Result: err.Error(),
+		}, err
+	}
+
+	hash, err := bcrypt.Encrypt(pass)
+	if err != nil {
+		return &pb.BaseResultResponse{
+			Result: err.Error(),
+		}, err
+	}
+
+	if err := s.Db.Model(&user).Update("password", hash).Error; err != nil {
+		return &pb.BaseResultResponse{
+			Result: err.Error(),
+		}, err
+	}
+
+	return &pb.BaseResultResponse{
+		Result: succ.Ok,
+	}, nil
+}
+
 func checkRecord[T any](db *gorm.DB, modelName string, value string, model *T) error {
 	if err := db.Where(fmt.Sprintf("%s = ?", modelName), value).First(model).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -119,4 +149,8 @@ func checkRecord[T any](db *gorm.DB, modelName string, value string, model *T) e
 		return err
 	}
 	return nil
+}
+
+func (s *Server) Ping(_ context.Context, _ *emptypb.Empty) (*pb.BaseResultResponse, error) {
+	return &pb.BaseResultResponse{Result: succ.Ok}, nil
 }

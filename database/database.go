@@ -21,7 +21,7 @@ func main() {
 
 	db := db_connect.Connect()
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", storage.Env.DbPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", storage.Env.DbServicePort))
 	if err != nil {
 		log.Fatalf("%s: %v", errs.FailedListen, err)
 	}
@@ -34,7 +34,7 @@ func main() {
 	serverErr := make(chan error, 1)
 
 	go func() {
-		log.Printf("gRPC auth_server is running on port %s... \n", storage.Env.DbPort)
+		log.Printf("gRPC auth_server is running on port %s... \n", storage.Env.DbServicePort)
 		serverErr <- server.Serve(lis)
 	}()
 

@@ -3,6 +3,7 @@ package grpc_client
 import (
 	"context"
 	"proto/databasepb"
+	"proto/smtppb"
 	"results/errs"
 	"time"
 )
@@ -36,4 +37,24 @@ func CheckUser(client databasepb.DatabaseServiceClient, username, email, passwor
 	}
 
 	return client.Login(ctx, req)
+}
+
+func SendOtp(client smtppb.SmtpServiceClient, email string, code int32) (*smtppb.BaseResultResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	return client.SendOtp(ctx, &smtppb.SendOtpRequest{
+		Email: email,
+		Code:  code,
+	})
+}
+
+func UpdatePassword(client databasepb.DatabaseServiceClient, email, password string) (*databasepb.BaseResultResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	return client.UpdatePassword(ctx, &databasepb.UpdatePasswordRequest{
+		Email:    email,
+		Password: password,
+	})
 }

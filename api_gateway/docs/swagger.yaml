@@ -9,20 +9,45 @@ definitions:
       username:
         type: string
     type: object
+  models.Refresh:
+    properties:
+      access_token:
+        type: string
+    type: object
   models.Register:
+    properties:
+      email:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+    type: object
+  models.ResetPassword:
+    properties:
+      code:
+        type: integer
+      email:
+        type: string
+    type: object
+  models.SendOtp:
+    properties:
+      email:
+        type: string
+    type: object
+  models.UpdatePassword:
     properties:
       email:
         type: string
       password:
         type: string
-      username:
+      reset_token:
         type: string
     type: object
-host: localhost:8080
 info:
   contact: {}
   title: Messenger API
-  version: "0.1"
+  version: "0.2"
 paths:
   /auth/login:
     post:
@@ -39,6 +64,23 @@ paths:
       - application/json
       responses: {}
       summary: Авторизация
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Обновление токена
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Refresh'
+      produces:
+      - application/json
+      responses: {}
+      summary: Refresh
       tags:
       - auth
   /auth/register:
@@ -58,4 +100,83 @@ paths:
       summary: Регистрация
       tags:
       - auth
+  /auth/reset_password:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные для проверки кода
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ResetPassword'
+      produces:
+      - application/json
+      responses: {}
+      summary: Подтвердить OTP код
+      tags:
+      - auth
+  /auth/send_otp:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные для отправки кода на почту
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.SendOtp'
+      produces:
+      - application/json
+      responses: {}
+      summary: Отправить код на почту
+      tags:
+      - auth
+  /auth/update_password:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные для обновления пароля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdatePassword'
+      produces:
+      - application/json
+      responses: {}
+      summary: Обновление пароля
+      tags:
+      - auth
+  /ping:
+    get:
+      description: Публичный запрос, который клиент отправляет при запуске. Возвращает
+        статус сервисов.
+      produces:
+      - application/json
+      responses: {}
+      summary: Проверка доступности сервера и версии приложения
+      tags:
+      - ping
+  /ws/notifications:
+    get:
+      parameters:
+      - description: JWT access token
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "101":
+          description: Switching Protocols
+          schema:
+            type: string
+      summary: WebSocket connect
+      tags:
+      - web_socket
 swagger: "2.0"

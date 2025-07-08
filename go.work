@@ -6,7 +6,7 @@ use (
 	./cache
 	./database
 	./results
-	./message
+	./chat
 	./notifications
 	./proto
 	./search

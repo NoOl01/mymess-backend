@@ -10,12 +10,16 @@ service AuthService {
   rpc Register (RegisterRequest) returns (AuthResponse);
   rpc Login (LoginRequest) returns (AuthResponse);
   rpc Refresh (RefreshRequest) returns (AuthResponse);
-  rpc Ping (google.protobuf.Empty) returns (PingResponse);
+  rpc SendOtp (SendOtpRequest) returns (BaseResultResponse);
+  rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
+  rpc UpdatePassword (UpdatePasswordRequest) returns (BaseResultResponse);
+
+  rpc Ping (google.protobuf.Empty) returns (BaseResultResponse);
 }
 
 // Requests
 message RegisterRequest {
-  string username = 1;
+  string nickname = 1;
   string email = 2;
   string password = 3;
 }
@@ -32,12 +36,32 @@ message RefreshRequest {
   string access_token = 1;
 }
 
+message SendOtpRequest {
+  string email = 1;
+}
+
+message ResetPasswordRequest {
+  string email = 1;
+  int32 code = 2;
+}
+
+message UpdatePasswordRequest {
+  string email = 1;
+  string password = 2;
+  string reset_token = 3;
+}
+
 // Responses
+message BaseResultResponse {
+  string result = 1;
+}
+
 message AuthResponse {
   string access_token = 1;
   string error = 2;
 }
 
-message PingResponse {
-  string status = 1;
+message ResetPasswordResponse {
+  string result = 1;
+  string reset_token = 2;
 }

@@ -2,36 +2,60 @@ services:
   api_gateway:
     build:
       context: .
-      dockerfile: api_gateway/Dockerfile
+      dockerfile: Dockerfile
+      args:
+        BUILD_SERVICE: api_gateway
     ports:
       - "8080:8080"
+    env_file:
+      - .env
 
   database:
     build:
       context: .
-      dockerfile: database/Dockerfile
+      dockerfile: Dockerfile
+      args:
+        BUILD_SERVICE: database
     ports:
       - "50051:50051"
-    depends_on:
-      postgres:
-        condition: service_healthy
+    env_file:
+      - .env
 
   auth:
     build:
       context: .
-      dockerfile: auth/Dockerfile
+      dockerfile: Dockerfile
+      args:
+        BUILD_SERVICE: auth
     ports:
       - "50052:50052"
+    env_file:
+      - .env
 
-  message:
+  chat:
     build:
       context: .
-      dockerfile: message/Dockerfile
+      dockerfile: Dockerfile
+      args:
+        BUILD_SERVICE: chat
     ports:
       - "8000:8000"
+    env_file:
+      - .env
+
+  smtp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_SERVICE: smtp
+    ports:
+      - "50053:50053"
+    env_file:
+      - .env
 
   postgres:
-    image: postgres:15-alpine
+    image: postgres:latest
     env_file:
       - ./postgres.env
     ports:

@@ -20,9 +20,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	DatabaseService_Register_FullMethodName = "/database.DatabaseService/Register"
-	DatabaseService_Login_FullMethodName    = "/database.DatabaseService/Login"
-	DatabaseService_Ping_FullMethodName     = "/database.DatabaseService/Ping"
+	DatabaseService_Register_FullMethodName       = "/database.DatabaseService/Register"
+	DatabaseService_Login_FullMethodName          = "/database.DatabaseService/Login"
+	DatabaseService_UpdatePassword_FullMethodName = "/database.DatabaseService/UpdatePassword"
+	DatabaseService_Ping_FullMethodName           = "/database.DatabaseService/Ping"
 )
 
 // DatabaseServiceClient is the client API for DatabaseService service.
@@ -31,7 +32,8 @@ const (
 type DatabaseServiceClient interface {
 	Register(ctx context.Context, in *CreateNewUserRequest, opts ...grpc.CallOption) (*AuthResponse, error)
 	Login(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*AuthResponse, error)
-	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PingResponse, error)
+	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*BaseResultResponse, error)
+	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error)
 }
 
 type databaseServiceClient struct {
@@ -62,9 +64,19 @@ func (c *databaseServiceClient) Login(ctx context.Context, in *LoginUserRequest,
 	return out, nil
 }
 
-func (c *databaseServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PingResponse, error) {
+func (c *databaseServiceClient) UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*BaseResultResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PingResponse)
+	out := new(BaseResultResponse)
+	err := c.cc.Invoke(ctx, DatabaseService_UpdatePassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *databaseServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BaseResultResponse)
 	err := c.cc.Invoke(ctx, DatabaseService_Ping_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -78,7 +90,8 @@ func (c *databaseServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opt
 type DatabaseServiceServer interface {
 	Register(context.Context, *CreateNewUserRequest) (*AuthResponse, error)
 	Login(context.Context, *LoginUserRequest) (*AuthResponse, error)
-	Ping(context.Context, *emptypb.Empty) (*PingResponse, error)
+	UpdatePassword(context.Context, *UpdatePasswordRequest) (*BaseResultResponse, error)
+	Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error)
 	mustEmbedUnimplementedDatabaseServiceServer()
 }
 
@@ -95,7 +108,10 @@ func (UnimplementedDatabaseServiceServer) Register(context.Context, *CreateNewUs
 func (UnimplementedDatabaseServiceServer) Login(context.Context, *LoginUserRequest) (*AuthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedDatabaseServiceServer) Ping(context.Context, *emptypb.Empty) (*PingResponse, error) {
+func (UnimplementedDatabaseServiceServer) UpdatePassword(context.Context, *UpdatePasswordRequest) (*BaseResultResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
+}
+func (UnimplementedDatabaseServiceServer) Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (UnimplementedDatabaseServiceServer) mustEmbedUnimplementedDatabaseServiceServer() {}
@@ -155,6 +171,24 @@ func _DatabaseService_Login_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatabaseService_UpdatePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseServiceServer).UpdatePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatabaseService_UpdatePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseServiceServer).UpdatePassword(ctx, req.(*UpdatePasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DatabaseService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -187,6 +221,10 @@ var DatabaseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _DatabaseService_Login_Handler,
+		},
+		{
+			MethodName: "UpdatePassword",
+			Handler:    _DatabaseService_UpdatePassword_Handler,
 		},
 		{
 			MethodName: "Ping",

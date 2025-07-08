@@ -42,4 +42,9 @@ var (
 	WsListenAndServeFailed = errors.New("failed to listen and serve")
 )
 
-// @XYZ_q2
+// Smtp
+var (
+	SmtpCodeOrEmailMissing = errors.New("missing code or email")
+	SmtpEmailMissing       = errors.New("email missing")
+	SmtpWrongOtpCode       = errors.New("wrong otp code")
+)

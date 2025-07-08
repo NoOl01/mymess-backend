@@ -5,11 +5,6 @@ type AuthResult struct {
 	Error  *string     `json:"error"`
 }
 
-type PingResult struct {
-	ApiGateway string `json:"api_gateway"`
-	Auth       string `json:"auth"`
-	Database   string `json:"database"`
-	Cache      string `json:"cache"`
-	Message    string `json:"message"`
-	Search     string `json:"search"`
+type BaseResult struct {
+	Result string `json:"result"`
 }

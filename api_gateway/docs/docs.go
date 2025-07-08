@@ -34,7 +34,33 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/db_models.Login"
+                            "$ref": "#/definitions/models.Login"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh",
+                "parameters": [
+                    {
+                        "description": "Обновление токена",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Refresh"
                         }
                     }
                 ],
@@ -60,16 +86,135 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/db_models.Register"
+                            "$ref": "#/definitions/models.Register"
                         }
                     }
                 ],
                 "responses": {}
             }
+        },
+        "/auth/reset_password": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Подтвердить OTP код",
+                "parameters": [
+                    {
+                        "description": "Данные для проверки кода",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ResetPassword"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/auth/send_otp": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Отправить код на почту",
+                "parameters": [
+                    {
+                        "description": "Данные для отправки кода на почту",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SendOtp"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/auth/update_password": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Обновление пароля",
+                "parameters": [
+                    {
+                        "description": "Данные для обновления пароля",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdatePassword"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/ping": {
+            "get": {
+                "description": "Публичный запрос, который клиент отправляет при запуске. Возвращает статус сервисов.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ping"
+                ],
+                "summary": "Проверка доступности сервера и версии приложения",
+                "responses": {}
+            }
+        },
+        "/ws/notifications": {
+            "get": {
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "web_socket"
+                ],
+                "summary": "WebSocket connect",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT access token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "101": {
+                        "description": "Switching Protocols",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "db_models.Login": {
+        "models.Login": {
             "type": "object",
             "properties": {
                 "email": {
@@ -83,7 +228,48 @@ const docTemplate = `{
                 }
             }
         },
-        "db_models.Register": {
+        "models.Refresh": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Register": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ResetPassword": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SendOtp": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UpdatePassword": {
             "type": "object",
             "properties": {
                 "email": {
@@ -92,7 +278,7 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "username": {
+                "reset_token": {
                     "type": "string"
                 }
             }
@@ -102,8 +288,8 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.1",
-	Host:             "localhost:8080",
+	Version:          "0.2",
+	Host:             "",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Messenger API",

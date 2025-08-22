@@ -1,10 +1,6 @@
 package models
 
-type AuthResult struct {
+type BaseResult struct {
 	Result interface{} `json:"result"`
 	Error  *string     `json:"error"`
-}
-
-type BaseResult struct {
-	Result string `json:"result"`
 }

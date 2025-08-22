@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package profile;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "proto/profilepb";
+
+service ProfileService {
+  rpc Update (UpdateRequest) returns (BaseResultResponse);
+
+  rpc Ping (google.protobuf.Empty) returns (BaseResultResponse);
+}
+
+//Requests
+message UpdateRequest {
+  string value = 1;
+  string type = 2;
+  string token = 3;
+}
+
+//Responses
+message BaseResultResponse {
+  string result = 1;
+}

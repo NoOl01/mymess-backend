@@ -9,6 +9,8 @@ use (
 	./chat
 	./notifications
 	./proto
-	./search
 	./smtp
+	./chat_kafka_consumer
+	./scylla
+	./profile
 )

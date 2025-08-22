@@ -1,16 +1,16 @@
 package main
 
 import (
-	grpcclientconnect "auth/internal/grpc_client"
-	"auth/internal/grpc_server"
-	"auth/internal/storage"
 	"fmt"
 	"google.golang.org/grpc"
 	"log"
 	"net"
 	"os"
 	"os/signal"
-	pb "proto/authpb"
+	grpcclientconnect "profile/internal/grpc_client"
+	"profile/internal/grpc_server"
+	"profile/internal/storage"
+	pb "proto/profilepb"
 	"results/errs"
 	"syscall"
 )
@@ -22,10 +22,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	smtpClient, smtpConn, err := grpcclientconnect.GrpcSmtpClientConnect()
-	if err != nil {
-		fmt.Println(err.Error())
-	}
 
 	defer func(conn *grpc.ClientConn) {
 		err := conn.Close()
@@ -34,27 +30,19 @@ func main() {
 		}
 	}(dbConn)
 
-	defer func(conn *grpc.ClientConn) {
-		err := conn.Close()
-		if err != nil {
-			log.Fatalf("%s: %v", errs.GrpcClientCloseFailed, err)
-		}
-	}(smtpConn)
-
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", storage.Env.AuthPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", storage.Env.ProfilePort))
 	if err != nil {
 		log.Fatalf("%s: %v", errs.FailedListen, err)
 	}
 
 	server := grpc.NewServer()
-	pb.RegisterAuthServiceServer(server, &grpc_server.Server{
-		Client:     dbClient,
-		SmtpClient: smtpClient,
+	pb.RegisterProfileServiceServer(server, &grpc_server.Server{
+		Client: dbClient,
 	})
 
 	serverErr := make(chan error, 1)
 	go func() {
-		log.Printf("gRPC auth_server is running on port %s... \n", storage.Env.AuthPort)
+		log.Printf("gRPC auth_server is running on port %s... \n", storage.Env.ProfilePort)
 		serverErr <- server.Serve(lis)
 	}()
 
@@ -66,6 +54,7 @@ func main() {
 		log.Printf("%s: %v", errs.ServerError, err)
 	case sig := <-quit:
 		log.Printf("Received signal: %v. Shutting down.", sig)
+		server.GracefulStop()
 		return
 	}
 }

@@ -44,6 +44,11 @@ definitions:
       reset_token:
         type: string
     type: object
+  models.UpdateProfile:
+    properties:
+      value:
+        type: string
+    type: object
 info:
   contact: {}
   title: Messenger API
@@ -161,7 +166,77 @@ paths:
       summary: Проверка доступности сервера и версии приложения
       tags:
       - ping
-  /ws/notifications:
+  /profile/info:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Username пользователя
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Получение профиля пользователя по id
+      tags:
+      - profile
+  /profile/update_email:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные для обновления профиля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateProfile'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Token: []
+      summary: Обновить nickname
+      tags:
+      - profile
+  /profile/update_nickname:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные для обновления профиля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateProfile'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Token: []
+      summary: Обновить nickname
+      tags:
+      - profile
+  /search/profiles:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Username пользователя
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Поиск пользователей по username
+      tags:
+      - search
+  /ws:
     get:
       parameters:
       - description: JWT access token
@@ -179,4 +254,9 @@ paths:
       summary: WebSocket connect
       tags:
       - web_socket
+securityDefinitions:
+  Token:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

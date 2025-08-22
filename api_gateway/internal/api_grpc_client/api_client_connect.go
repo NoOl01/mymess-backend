@@ -1,50 +1,38 @@
 package api_grpc_client
 
 import (
-	"api_gateway/internal/api_storage"
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	pb "proto/authpb"
-	"proto/databasepb"
-	"proto/smtppb"
 	"results/errs"
 )
 
-// todo Этот ужас тоже переделать
+type ClientFactory[T any] func(conn grpc.ClientConnInterface) T
 
-func GrpcAuthClientConnect() (pb.AuthServiceClient, *grpc.ClientConn, error) {
-	gRpcConn, err := grpc.NewClient(
-		fmt.Sprintf("dns:///%s:%s", api_storage.Env.AuthHost, api_storage.Env.AuthPort),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %v", errs.GrpcClientConnectFailed, err)
-	}
-
-	return pb.NewAuthServiceClient(gRpcConn), gRpcConn, nil
+type ClientParams[T any] struct {
+	ServiceHost string
+	ServicePort string
+	Factory     ClientFactory[T]
 }
 
-func GrpcDatabaseClientConnect() (databasepb.DatabaseServiceClient, *grpc.ClientConn, error) {
-	gRpcConn, err := grpc.NewClient(
-		fmt.Sprintf("dns:///%s:%s", api_storage.Env.DbHost, api_storage.Env.DbPort),
+func GrpcClientConnect[T any](params ClientParams[T]) (T, *grpc.ClientConn, error) {
+	conn, err := grpc.NewClient(
+		fmt.Sprintf("dns:///%s:%s", params.ServiceHost, params.ServicePort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %v", errs.GrpcClientConnectFailed, err)
+		var zero T
+		return zero, nil, fmt.Errorf("%w: %s:%s. %v\n", errs.GrpcClientConnectFailed, params.ServiceHost, params.ServicePort, err)
 	}
 
-	return databasepb.NewDatabaseServiceClient(gRpcConn), gRpcConn, nil
+	client := params.Factory(conn)
+	return client, conn, nil
 }
 
-func GrpcSmtpClientConnect() (smtppb.SmtpServiceClient, *grpc.ClientConn, error) {
-	gRpcConn, err := grpc.NewClient(
-		fmt.Sprintf("dns:///%s:%s", api_storage.Env.SmtpServiceHost, api_storage.Env.SmtpServicePort),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %v", errs.GrpcClientConnectFailed, err)
+func Connect[T any](host, port string, factory func(grpc.ClientConnInterface) T) ClientParams[T] {
+	return ClientParams[T]{
+		ServiceHost: host,
+		ServicePort: port,
+		Factory:     factory,
 	}
-
-	return smtppb.NewSmtpServiceClient(gRpcConn), gRpcConn, nil
 }

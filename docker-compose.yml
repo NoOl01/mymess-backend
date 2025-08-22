@@ -9,6 +9,8 @@ services:
       - "8080:8080"
     env_file:
       - .env
+    networks:
+      - messenger-network
 
   database:
     build:
@@ -20,6 +22,8 @@ services:
       - "50051:50051"
     env_file:
       - .env
+    networks:
+      - messenger-network
 
   auth:
     build:
@@ -31,6 +35,8 @@ services:
       - "50052:50052"
     env_file:
       - .env
+    networks:
+      - messenger-network
 
   chat:
     build:
@@ -42,6 +48,8 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    networks:
+      - messenger-network
 
   smtp:
     build:
@@ -53,6 +61,47 @@ services:
       - "50053:50053"
     env_file:
       - .env
+    networks:
+      - messenger-network
+
+  kafka_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_SERVICE: chat_kafka_consumer
+    ports:
+      - "50054:50054"
+    env_file:
+      - .env
+    networks:
+      - messenger-network
+
+  scylla:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_SERVICE: scylla
+    ports:
+      - "50055:50055"
+    env_file:
+      - .env
+    networks:
+      - messenger-network
+
+  profile:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_SERVICE: profile
+    ports:
+      - "50056:50056"
+    env_file:
+      - .env
+    networks:
+      - messenger-network
 
   postgres:
     image: postgres:latest
@@ -64,7 +113,50 @@ services:
       - pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust # УДАЛИТЬ
+    networks:
+      - messenger-network
 
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      CLUSTER_ID: "1"
+    ports:
+      - "9092:9092"
+    networks:
+      - messenger-network
+
+  scylla_db:
+    image: scylladb/scylla:latest
+    container_name: scylla_db
+    ports:
+      - "9042:9042"
+      - "10000:10000"
+    volumes:
+      - scylla-data:/var/lib/scylla
+    environment:
+      SCYLLA_CONF: /etc/scylla
+      command: --smp 2 --memory 2G
+    restart: unless-stopped
+    networks:
+      - messenger-network
 
 volumes:
   pgdata:
+  scylla-data:
+
+networks:
+  messenger-network:
+    driver: bridge

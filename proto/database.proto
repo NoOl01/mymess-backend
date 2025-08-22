@@ -10,6 +10,9 @@ service DatabaseService {
   rpc Register (CreateNewUserRequest) returns (AuthResponse);
   rpc Login (LoginUserRequest) returns (AuthResponse);
   rpc UpdatePassword (UpdatePasswordRequest) returns (BaseResultResponse);
+  rpc UpdateProfile (UpdateRequest) returns (BaseResultResponse);
+  rpc FindProfile (FindProfileRequest) returns (FindProfileResponse);
+  rpc GetProfileInfo (GetProfileInfoRequest) returns (GetProfileInfoResponse);
 
   rpc Ping (google.protobuf.Empty) returns (BaseResultResponse);
 }
@@ -34,6 +37,20 @@ message UpdatePasswordRequest {
   string password = 2;
 }
 
+message UpdateRequest {
+  string value = 1;
+  string type = 2;
+  int64 userId = 3;
+}
+
+message FindProfileRequest {
+  string name = 1;
+}
+
+message GetProfileInfoRequest {
+  int64 id = 1;
+}
+
 // Responses
 message BaseResultResponse {
   string result = 1;
@@ -42,4 +59,23 @@ message BaseResultResponse {
 message AuthResponse {
   string userId = 1;
   string result = 2;
+}
+
+message FindProfileBody {
+  int64 id = 1;
+  string nickname = 2;
+  string username = 3;
+  string avatar = 4;
+  string banner = 5;
+  string registered_at = 6;
+}
+
+message FindProfileResponse {
+  repeated FindProfileBody body = 1;
+  string error = 2;
+}
+
+message GetProfileInfoResponse {
+  FindProfileBody body = 1;
+  string error = 2;
 }

@@ -23,6 +23,9 @@ const (
 	DatabaseService_Register_FullMethodName       = "/database.DatabaseService/Register"
 	DatabaseService_Login_FullMethodName          = "/database.DatabaseService/Login"
 	DatabaseService_UpdatePassword_FullMethodName = "/database.DatabaseService/UpdatePassword"
+	DatabaseService_UpdateProfile_FullMethodName  = "/database.DatabaseService/UpdateProfile"
+	DatabaseService_FindProfile_FullMethodName    = "/database.DatabaseService/FindProfile"
+	DatabaseService_GetProfileInfo_FullMethodName = "/database.DatabaseService/GetProfileInfo"
 	DatabaseService_Ping_FullMethodName           = "/database.DatabaseService/Ping"
 )
 
@@ -33,6 +36,9 @@ type DatabaseServiceClient interface {
 	Register(ctx context.Context, in *CreateNewUserRequest, opts ...grpc.CallOption) (*AuthResponse, error)
 	Login(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*AuthResponse, error)
 	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*BaseResultResponse, error)
+	UpdateProfile(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*BaseResultResponse, error)
+	FindProfile(ctx context.Context, in *FindProfileRequest, opts ...grpc.CallOption) (*FindProfileResponse, error)
+	GetProfileInfo(ctx context.Context, in *GetProfileInfoRequest, opts ...grpc.CallOption) (*GetProfileInfoResponse, error)
 	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error)
 }
 
@@ -74,6 +80,36 @@ func (c *databaseServiceClient) UpdatePassword(ctx context.Context, in *UpdatePa
 	return out, nil
 }
 
+func (c *databaseServiceClient) UpdateProfile(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*BaseResultResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BaseResultResponse)
+	err := c.cc.Invoke(ctx, DatabaseService_UpdateProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *databaseServiceClient) FindProfile(ctx context.Context, in *FindProfileRequest, opts ...grpc.CallOption) (*FindProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindProfileResponse)
+	err := c.cc.Invoke(ctx, DatabaseService_FindProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *databaseServiceClient) GetProfileInfo(ctx context.Context, in *GetProfileInfoRequest, opts ...grpc.CallOption) (*GetProfileInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetProfileInfoResponse)
+	err := c.cc.Invoke(ctx, DatabaseService_GetProfileInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *databaseServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BaseResultResponse)
@@ -91,6 +127,9 @@ type DatabaseServiceServer interface {
 	Register(context.Context, *CreateNewUserRequest) (*AuthResponse, error)
 	Login(context.Context, *LoginUserRequest) (*AuthResponse, error)
 	UpdatePassword(context.Context, *UpdatePasswordRequest) (*BaseResultResponse, error)
+	UpdateProfile(context.Context, *UpdateRequest) (*BaseResultResponse, error)
+	FindProfile(context.Context, *FindProfileRequest) (*FindProfileResponse, error)
+	GetProfileInfo(context.Context, *GetProfileInfoRequest) (*GetProfileInfoResponse, error)
 	Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error)
 	mustEmbedUnimplementedDatabaseServiceServer()
 }
@@ -110,6 +149,15 @@ func (UnimplementedDatabaseServiceServer) Login(context.Context, *LoginUserReque
 }
 func (UnimplementedDatabaseServiceServer) UpdatePassword(context.Context, *UpdatePasswordRequest) (*BaseResultResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
+}
+func (UnimplementedDatabaseServiceServer) UpdateProfile(context.Context, *UpdateRequest) (*BaseResultResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfile not implemented")
+}
+func (UnimplementedDatabaseServiceServer) FindProfile(context.Context, *FindProfileRequest) (*FindProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindProfile not implemented")
+}
+func (UnimplementedDatabaseServiceServer) GetProfileInfo(context.Context, *GetProfileInfoRequest) (*GetProfileInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProfileInfo not implemented")
 }
 func (UnimplementedDatabaseServiceServer) Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
@@ -189,6 +237,60 @@ func _DatabaseService_UpdatePassword_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatabaseService_UpdateProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseServiceServer).UpdateProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatabaseService_UpdateProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseServiceServer).UpdateProfile(ctx, req.(*UpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatabaseService_FindProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseServiceServer).FindProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatabaseService_FindProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseServiceServer).FindProfile(ctx, req.(*FindProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatabaseService_GetProfileInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProfileInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseServiceServer).GetProfileInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatabaseService_GetProfileInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseServiceServer).GetProfileInfo(ctx, req.(*GetProfileInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DatabaseService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -225,6 +327,18 @@ var DatabaseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdatePassword",
 			Handler:    _DatabaseService_UpdatePassword_Handler,
+		},
+		{
+			MethodName: "UpdateProfile",
+			Handler:    _DatabaseService_UpdateProfile_Handler,
+		},
+		{
+			MethodName: "FindProfile",
+			Handler:    _DatabaseService_FindProfile_Handler,
+		},
+		{
+			MethodName: "GetProfileInfo",
+			Handler:    _DatabaseService_GetProfileInfo_Handler,
 		},
 		{
 			MethodName: "Ping",

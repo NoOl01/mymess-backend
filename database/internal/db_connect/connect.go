@@ -19,7 +19,7 @@ func Connect() *gorm.DB {
 		log.Fatalf("%s: %s", errs.FailedDatabaseConnect, err.Error())
 	}
 
-	autoMigrateErr := db.AutoMigrate(&db_models.User{}, &db_models.DeviceToken{}, &db_models.Chat{}, &db_models.Message{}, &db_models.UserTheme{})
+	autoMigrateErr := db.AutoMigrate(&db_models.User{}, &db_models.DeviceToken{}, &db_models.UserTheme{})
 	if autoMigrateErr != nil {
 		log.Fatal(autoMigrateErr)
 	}

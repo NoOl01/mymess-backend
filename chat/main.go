@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"message/internal/jwt"
+	"message/internal/kafka"
 	"message/internal/storage"
 	"message/internal/web_socket"
 	"net/http"
@@ -50,6 +51,16 @@ func serveWS(hub *web_socket.Hub, w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	storage.LoadEnv()
+
+	err := kafka.StartKafka()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer func() {
+		kafka.Producer.Flush(5000)
+		kafka.Producer.Close()
+	}()
 
 	hub := web_socket.NewHub()
 	go hub.Run()

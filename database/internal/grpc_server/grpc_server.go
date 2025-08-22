@@ -3,6 +3,7 @@ package grpc_server
 import (
 	"context"
 	"database/internal/bcrypt"
+	"database/internal/common"
 	"database/internal/db_models"
 	"errors"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 	"results/errs"
 	"results/succ"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -82,9 +84,9 @@ func (s *Server) Login(_ context.Context, req *pb.LoginUserRequest) (*pb.AuthRes
 
 	switch login := req.LoginMethod.(type) {
 	case *pb.LoginUserRequest_Username:
-		err = checkRecord(s.Db, "username", login.Username, &user)
+		err = common.CheckRecord(s.Db, "username", login.Username, &user)
 	case *pb.LoginUserRequest_Email:
-		err = checkRecord(s.Db, "email", login.Email, &user)
+		err = common.CheckRecord(s.Db, "email", login.Email, &user)
 	default:
 		return &pb.AuthResponse{
 			UserId: "",
@@ -117,7 +119,7 @@ func (s *Server) UpdatePassword(_ context.Context, req *pb.UpdatePasswordRequest
 	pass := req.GetPassword()
 
 	var user db_models.User
-	if err := checkRecord(s.Db, "email", email, &user); err != nil {
+	if err := common.CheckRecord(s.Db, "email", email, &user); err != nil {
 		return &pb.BaseResultResponse{
 			Result: err.Error(),
 		}, err
@@ -141,11 +143,115 @@ func (s *Server) UpdatePassword(_ context.Context, req *pb.UpdatePasswordRequest
 	}, nil
 }
 
-func checkRecord[T any](db *gorm.DB, modelName string, value string, model *T) error {
-	if err := db.Where(fmt.Sprintf("%s = ?", modelName), value).First(model).Error; err != nil {
+func (s *Server) UpdateProfile(_ context.Context, req *pb.UpdateRequest) (*pb.BaseResultResponse, error) {
+	value := req.GetValue()
+	updateType := req.GetType()
+	userId := req.GetUserId()
+
+	var user db_models.User
+	if err := s.Db.Where("user_id = ?", userId).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errs.RecordNotFound
+			return &pb.BaseResultResponse{
+				Result: errs.RecordNotFound.Error(),
+			}, errs.RecordNotFound
 		}
+		return &pb.BaseResultResponse{
+			Result: err.Error(),
+		}, err
+	}
+
+	switch updateType {
+	case "nickname":
+		user.Nickname = value
+	case "email":
+		user.Email = value
+	case "avatar":
+		user.AvatarPath = value
+	case "banner":
+		user.BannerPath = value
+	default:
+		return &pb.BaseResultResponse{
+			Result: errs.UnknownType.Error(),
+		}, errs.UnknownType
+	}
+
+	if err := s.Db.Save(&user).Error; err != nil {
+		return &pb.BaseResultResponse{
+			Result: err.Error(),
+		}, err
+	}
+
+	return &pb.BaseResultResponse{
+		Result: succ.Ok,
+	}, nil
+}
+
+func (s *Server) FindProfile(_ context.Context, req *pb.FindProfileRequest) (*pb.FindProfileResponse, error) {
+	value := req.GetName()
+	var users []db_models.User
+	var nameType string
+
+	if strings.HasPrefix(value, "@") {
+		nameType = "username"
+		value = strings.TrimPrefix(value, "@")
+	} else {
+		nameType = "nickname"
+	}
+
+	if err := findProfile(fmt.Sprintf("%s ILIKE ?", nameType), value, &users, s.Db); err != nil {
+		return &pb.FindProfileResponse{
+			Error: err.Error(),
+		}, err
+	}
+
+	var bodies []*pb.FindProfileBody
+	for _, user := range users {
+		bodies = append(bodies, &pb.FindProfileBody{
+			Id:           user.Id,
+			Nickname:     user.Nickname,
+			Username:     user.Username,
+			Avatar:       user.AvatarPath,
+			Banner:       user.BannerPath,
+			RegisteredAt: user.RegisterDate.Format("2006-01-02T15:04:05Z"),
+		})
+	}
+
+	return &pb.FindProfileResponse{
+		Body:  bodies,
+		Error: "",
+	}, nil
+}
+
+func (s *Server) GetProfileInfo(_ context.Context, req *pb.GetProfileInfoRequest) (*pb.GetProfileInfoResponse, error) {
+	id := req.GetId()
+	var user db_models.User
+	if err := s.Db.Where("id = ?", id).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &pb.GetProfileInfoResponse{
+				Error: errs.RecordNotFound.Error(),
+			}, errs.RecordNotFound
+		}
+		return &pb.GetProfileInfoResponse{
+			Error: err.Error(),
+		}, err
+	}
+
+	body := pb.FindProfileBody{
+		Id:           user.Id,
+		Nickname:     user.Nickname,
+		Username:     user.Username,
+		Avatar:       user.AvatarPath,
+		Banner:       user.BannerPath,
+		RegisteredAt: user.RegisterDate.Format("2006-01-02T15:04:05Z"),
+	}
+
+	return &pb.GetProfileInfoResponse{
+		Body: &body,
+	}, nil
+}
+
+func findProfile(where, username string, users *[]db_models.User, db *gorm.DB) error {
+	if err := db.Where(where, "%"+username+"%").Limit(10).Find(users).Error; err != nil {
 		return err
 	}
 	return nil

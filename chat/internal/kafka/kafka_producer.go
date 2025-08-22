@@ -2,21 +2,37 @@ package kafka
 
 import (
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
+	kafkago "github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
 	"message/internal/storage"
+	"results/errs"
 )
 
-var Producer *kafka.Producer
+var Producer *kafkago.Producer
 
-func StartKafka() {
+func StartKafka() error {
 	var err error
-	Producer, err = kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": fmt.Sprintf("localhost:%s", storage.Env.KafkaPort),
+	Producer, err = kafkago.NewProducer(&kafkago.ConfigMap{
+		"bootstrap.servers":  fmt.Sprintf("%s:%s", storage.Env.KafkaHost, storage.Env.KafkaPort),
+		"message.timeout.ms": 5000,
+		"acks":               "all",
 	})
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	defer Producer.Close()
+	go func() {
+		for e := range Producer.Events() {
+			switch ev := e.(type) {
+			case *kafkago.Message:
+				if ev.TopicPartition.Error != nil {
+					fmt.Printf("%s: %v", errs.KafkaDeliverFailed, ev.TopicPartition.Error)
+				}
+			case kafkago.Error:
+				log.Println(ev)
+			}
+		}
+	}()
+
+	return nil
 }

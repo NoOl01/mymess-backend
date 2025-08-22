@@ -8,6 +8,8 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"proto/authpb"
 	"proto/databasepb"
+	"proto/profilepb"
+	"proto/scyllapb"
 	"proto/smtppb"
 
 	_ "api_gateway/docs"
@@ -16,12 +18,14 @@ import (
 func Router(router *gin.Engine,
 	client authpb.AuthServiceClient,
 	dbClient databasepb.DatabaseServiceClient,
-	smtpClient smtppb.SmtpServiceClient) {
+	smtpClient smtppb.SmtpServiceClient,
+	profileClient profilepb.ProfileServiceClient,
+	scyllaClient scyllapb.ScyllaServiceClient) {
 	api := router.Group("/api/v1")
 	{
 		auth := api.Group("/auth")
 		{
-			authController := controllers.Controller{Client: client}
+			authController := controllers.AuthController{Client: client}
 
 			auth.POST("/register", authController.RegisterController)
 			auth.POST("/login", authController.LoginController)
@@ -30,11 +34,25 @@ func Router(router *gin.Engine,
 			auth.POST("/reset_password", authController.ResetPassword)
 			auth.POST("/update_password", authController.UpdatePassword)
 		}
+		profile := api.Group("/profile")
+		{
+			profileController := controllers.ProfileController{Client: profileClient, DbClient: dbClient}
+
+			profile.POST("/update_nickname", profileController.UpdateNickname)
+			profile.POST("/update_email", profileController.UpdateNickname)
+			profile.GET("/info", profileController.GetProfileInfo)
+		}
+		search := api.Group("/search")
+		{
+			searchController := controllers.SearchController{Client: dbClient}
+
+			search.GET("/profiles", searchController.SearchUser)
+		}
 		if api_storage.Env.DebugMode {
 			api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		}
 	}
-	ping := controllers.Ping{AuthClient: client, DbClient: dbClient, SmtpClient: smtpClient}
+	ping := controllers.Ping{AuthClient: client, DbClient: dbClient, SmtpClient: smtpClient, ProfileClient: profileClient, ScyllaClient: scyllaClient}
 	router.GET("/api/v1/ping", ping.Ping)
 
 	if api_storage.Env.DebugMode {

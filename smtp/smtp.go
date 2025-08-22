@@ -39,6 +39,7 @@ func main() {
 		log.Printf("%s: %v", errs.ServerError, err)
 	case sig := <-quit:
 		log.Printf("Received signal: %v. Shutting down.", sig)
+		server.GracefulStop()
 		return
 	}
 }

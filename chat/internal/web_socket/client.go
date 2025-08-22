@@ -3,9 +3,10 @@ package web_socket
 import (
 	"encoding/json"
 	"fmt"
+	kf "github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/websocket"
+	"message/internal/kafka"
 	"results/errs"
-	"strconv"
 )
 
 type Client struct {
@@ -15,15 +16,15 @@ type Client struct {
 }
 
 type Message struct {
-	Message string `json:"chat"`
+	Message string `json:"message"`
 	UserId  int64  `json:"user_id"`
-	SendId  int64  `json:"send_id"`
+	ChatId  int64  `json:"chat_id"`
 }
 
 type KafkaJson struct {
 	Message string `json:"message"`
 	UserId  int64  `json:"user_id"`
-	SendId  int64  `json:"send_id"`
+	ChatId  int64  `json:"chat_id"`
 }
 
 func (c *Client) ReadPump(hub *Hub) {
@@ -50,24 +51,24 @@ func (c *Client) ReadPump(hub *Hub) {
 
 		broadcast := Broadcast{
 			Message: []byte(msg.Message),
-			SendId:  strconv.FormatInt(msg.SendId, 10),
+			ChatId:  msg.ChatId,
 		}
 
-		//payload := KafkaJson{
-		//	Message: msg.Message,
-		//	UserId:  msg.UserId,
-		//	SendId:  msg.SendId,
-		//}
-		//
-		//payloadBytes, err := json.Marshal(payload)
-		//if err != nil{
-		//	fmt.Printf("%s", errs.FailedEncodeToJson)
-		//}
-		//
-		//err = kafka.Producer.Produce(&kf.Message{
-		//	TopicPartition: kf.TopicPartition{Topic: strPtr("chat_messages"), Partition: kf.PartitionAny},
-		//	Value:          payloadBytes,
-		//}, nil)
+		payload := KafkaJson{
+			Message: msg.Message,
+			UserId:  msg.UserId,
+			ChatId:  msg.ChatId,
+		}
+
+		payloadBytes, err := json.Marshal(payload)
+		if err != nil {
+			fmt.Printf("%s", errs.FailedEncodeToJson)
+		}
+
+		err = kafka.Producer.Produce(&kf.Message{
+			TopicPartition: kf.TopicPartition{Topic: strPtr("chat_messages"), Partition: kf.PartitionAny},
+			Value:          payloadBytes,
+		}, nil)
 
 		hub.Broadcast <- broadcast
 	}

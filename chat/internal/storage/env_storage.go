@@ -5,6 +5,7 @@ import (
 )
 
 type EnvStorage struct {
+	KafkaHost   string
 	KafkaPort   string
 	MessagePort string
 	JwtSecret   string
@@ -17,6 +18,7 @@ func LoadEnv() {
 	//	log.Fatalf("%s: %s", errs.FailedLoadEnvFile, err.Error())
 	//}
 
+	Env.KafkaHost = os.Getenv("KAFKA_HOST")
 	Env.KafkaPort = os.Getenv("KAFKA_PORT")
 	Env.MessagePort = os.Getenv("CHAT_PORT")
 	Env.JwtSecret = os.Getenv("JWT_SECRET")

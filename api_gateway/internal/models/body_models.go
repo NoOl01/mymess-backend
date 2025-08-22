@@ -30,3 +30,7 @@ type UpdatePassword struct {
 	Password   string `json:"password"`
 	ResetToken string `json:"reset_token"`
 }
+
+type UpdateProfile struct {
+	Value string `json:"value"`
+}

@@ -18,32 +18,9 @@ type User struct {
 
 type DeviceToken struct {
 	Id     int64  `gorm:"primaryKey;autoIncrement" json:"id"`
-	UserId int    `gorm:"not null;" json:"user_id"`
+	UserId int64  `gorm:"not null;" json:"user_id"`
 	User   User   `gorm:"foreignKey:UserId" json:"-"`
 	Token  string `gorm:"not null" json:"token"`
-}
-
-type Chat struct {
-	Id            int64     `gorm:"primaryKey;autoIncrement" json:"id"`
-	UserId        int64     `gorm:"not null;index:idx_user_peer" json:"user_id"`
-	User          *User     `gorm:"foreignKey:UserId" json:"-"`
-	PeerId        int64     `gorm:"not null;index:idx_user_peer" json:"peer_id"`
-	Peer          *User     `gorm:"foreignKey:PeerId" json:"-"`
-	LastMessageId int64     `json:"last_message_id"`
-	LastMessage   *Message  `gorm:"foreignKey:LastMessageId" json:"-"`
-	UnreadCount   int       `gorm:"not null;default:0" json:"unread_count"`
-	UpdatedAt     time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-}
-
-type Message struct {
-	Id        int64     `gorm:"primaryKey;autoIncrement" json:"id"`
-	UserId    int64     `gorm:"not null;" json:"user_id"`
-	User      *User     `gorm:"foreignKey:UserId" json:"-"`
-	SenderId  int64     `gorm:"not null;" json:"sender_id"`
-	Sender    *User     `gorm:"foreignKey:SenderId" json:"-"`
-	Content   string    `gorm:"not null;" json:"content"`
-	CreatedAt time.Time `json:"created_at"`
-	Edited    bool      `json:"edited"`
 }
 
 type UserTheme struct {

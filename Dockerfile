@@ -1,4 +1,4 @@
-FROM golang:1.24-alpine AS builder
+FROM golang:1.24 AS builder
 
 WORKDIR /app
 
@@ -10,9 +10,9 @@ ARG BUILD_SERVICE
 
 WORKDIR /app/${BUILD_SERVICE}
 
-RUN go build -o ${BUILD_SERVICE} .
+RUN CGO_ENABLED=1 go build -o ${BUILD_SERVICE} .
 
-FROM alpine:latest
+FROM debian:stable-slim
 
 WORKDIR /root/
 

@@ -13,6 +13,7 @@ type MessageStruct struct {
 	ChatId  string
 	UserId  int64
 	Message string
+	Time    time.Time
 }
 
 type MessageData struct {
@@ -93,7 +94,7 @@ func InsertMessageBatch(messages []MessageStruct) error {
 			chatUUID,
 			message.UserId,
 			message.Message,
-			time.Now(),
+			message.Time,
 			false,
 			false,
 			nil,

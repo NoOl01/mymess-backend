@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 	"message/internal/kafka"
 	"results/errs"
+	"time"
 )
 
 type Client struct {
@@ -21,10 +22,17 @@ type Message struct {
 	ChatId  string `json:"chat_id"`
 }
 
+type MessageOutput struct {
+	Message string    `json:"message"`
+	UserId  int64     `json:"user_id"`
+	Time    time.Time `json:"time"`
+}
+
 type KafkaJson struct {
-	Message string `json:"message"`
-	UserId  int64  `json:"user_id"`
-	ChatId  string `json:"chat_id"`
+	Message string    `json:"message"`
+	UserId  int64     `json:"user_id"`
+	ChatId  string    `json:"chat_id"`
+	Time    time.Time `json:"time"`
 }
 
 func (c *Client) ReadPump(hub *Hub) {
@@ -58,6 +66,7 @@ func (c *Client) ReadPump(hub *Hub) {
 			Message: msg.Message,
 			UserId:  msg.UserId,
 			ChatId:  msg.ChatId,
+			Time:    time.Now(),
 		}
 
 		payloadBytes, err := json.Marshal(payload)
@@ -84,7 +93,17 @@ func (c *Client) WritePump() {
 
 	for msg := range c.Send {
 
-		if err := c.Conn.WriteMessage(websocket.TextMessage, msg.Message); err != nil {
+		message, err := json.Marshal(MessageOutput{
+			Message: string(msg.Message),
+			UserId:  msg.UserId,
+			Time:    time.Now(),
+		})
+		if err != nil {
+			fmt.Printf("%s", errs.FailedEncodeToJson)
+			return
+		}
+
+		if err := c.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
 			break
 		}
 	}

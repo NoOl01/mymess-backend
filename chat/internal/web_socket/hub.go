@@ -9,7 +9,7 @@ type Hub struct {
 
 type Broadcast struct {
 	Message []byte
-	ChatId  int64
+	ChatId  string
 }
 
 func NewHub() *Hub {

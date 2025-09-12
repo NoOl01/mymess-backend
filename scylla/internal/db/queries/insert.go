@@ -15,121 +15,52 @@ type MessageStruct struct {
 	Message string
 }
 
-func InsertPrivateChat(userIds []int64) error {
-	if len(userIds) == 0 {
-		return fmt.Errorf("%v\n", errs.InvalidRequestBody)
-	}
-
-	chatStmt, err := db.PrivateChatTable.Insert()
-	if err != nil {
-		return fmt.Errorf("%v\n", err)
-	}
-
-	participantStmt, err := db.ChatParticipantTable.Insert()
-	if err != nil {
-		return fmt.Errorf("%v\n", err)
-	}
-
-	batch := db.Session.NewBatch(gocql.UnloggedBatch)
-	chatId := gocql.TimeUUID()
-
-	batch.Query(
-		chatStmt,
-		chatId,
-		time.Now(),
-		nil,
-	)
-
-	for _, userId := range userIds {
-		batch.Query(
-			participantStmt,
-			chatId,
-			userId,
-			0,
-			nil,
-		)
-	}
-
-	if err := db.Session.ExecuteBatch(batch); err != nil {
-		return fmt.Errorf("execute batch: %v", err)
-	}
-
-	return nil
+type MessageData struct {
+	UserId         int64
+	InterlocutorId int64
+	Content        string
 }
 
-func InsertGroupChat(title, avatar, banner string) error {
-	chat := db.GroupChat{
-		Id:            gocql.TimeUUID(),
-		Title:         title,
-		Avatar:        avatar,
-		Banner:        banner,
-		CreatedAt:     time.Now(),
-		LastMessageId: nil,
-	}
-
-	stmt, _ := db.GroupChatTable.Insert()
-	query := db.Session.Query(stmt)
-
-	values := []interface{}{
-		chat.Id,
-		chat.Title,
-		chat.Avatar,
-		chat.Banner,
-		chat.CreatedAt,
-		chat.LastMessageId,
-	}
-
-	if err := query.Bind(values...).Exec(); err != nil {
-		return err
-	}
-
-	return nil
+type ChatPair struct {
+	UserId         int64
+	InterlocutorId int64
 }
 
-func InsertChatParticipant(chatId gocql.UUID, userId int64) error {
-	now := time.Now()
-	chatParticipant := db.ChatParticipant{
-		ChatId:  chatId,
-		UserId:  userId,
-		Unread:  0,
-		AddedAt: &now,
-	}
-
-	stmt, _ := db.ChatParticipantTable.Insert()
-	query := db.Session.Query(stmt)
-
-	values := []interface{}{
-		chatId,
-		userId,
-		chatParticipant.AddedAt,
-		chatParticipant.Unread,
-	}
-
-	if err := query.Bind(values...).Exec(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func InsertPrivateChatBatch(userIds, interlocutorIds []int64) (map[int64]string, error) {
+func InsertPrivateChatBatch(pendingMessages map[string][]MessageData) (map[string]string, error) {
 	chatStmt := "INSERT INTO private_chats (id, created_at, last_message_id) VALUES (?, ?, ?)"
 	participantStmt := "INSERT INTO chat_participants (chat_id, user_id, unread, added_at) VALUES (?, ?, ?, ?)"
 
-	chats := make(map[int64]string)
+	chatIdToUUID := make(map[string]string)
+	pairToUUID := make(map[string]string)
+
 	batch := db.Session.NewBatch(gocql.UnloggedBatch)
 
-	for i := 0; i < len(userIds); i++ {
-		chatId := gocql.TimeUUID()
-		chatIdStr := chatId.String()
+	uniquePairs := make(map[string]ChatPair)
+	for originalChatId, chatList := range pendingMessages {
+		if len(chatList) > 0 {
+			firstChat := chatList[0]
+			pairKey := generateChatKey(firstChat.UserId, firstChat.InterlocutorId)
 
-		chats[userIds[i]] = chatIdStr
-		chats[interlocutorIds[i]] = chatIdStr
+			if _, exists := uniquePairs[pairKey]; !exists {
+				uniquePairs[pairKey] = ChatPair{
+					UserId:         firstChat.UserId,
+					InterlocutorId: firstChat.InterlocutorId,
+				}
+			}
 
-		batch.Query(chatStmt, chatId, time.Now(), nil)
+			if _, exists := pairToUUID[pairKey]; !exists {
+				chatId := gocql.TimeUUID()
+				chatIdStr := chatId.String()
+				pairToUUID[pairKey] = chatIdStr
 
-		for _, userId := range []int64{userIds[i], interlocutorIds[i]} {
-			batch.Query(participantStmt, chatId, userId, 0, time.Now())
+				batch.Query(chatStmt, chatId, time.Now(), nil)
+
+				for _, userId := range []int64{firstChat.UserId, firstChat.InterlocutorId} {
+					batch.Query(participantStmt, chatId, userId, 0, time.Now())
+				}
+			}
+
+			chatIdToUUID[originalChatId] = pairToUUID[pairKey]
 		}
 	}
 
@@ -137,7 +68,7 @@ func InsertPrivateChatBatch(userIds, interlocutorIds []int64) (map[int64]string,
 		return nil, fmt.Errorf("failed to insert private chat batch: %v", err)
 	}
 
-	return chats, nil
+	return chatIdToUUID, nil
 }
 
 func InsertMessageBatch(messages []MessageStruct) error {
@@ -174,4 +105,11 @@ func InsertMessageBatch(messages []MessageStruct) error {
 	}
 
 	return nil
+}
+
+func generateChatKey(id1, id2 int64) string {
+	if id1 < id2 {
+		return fmt.Sprintf("%d:%d", id1, id2)
+	}
+	return fmt.Sprintf("%d:%d", id2, id1)
 }

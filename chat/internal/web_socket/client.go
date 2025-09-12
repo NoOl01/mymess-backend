@@ -18,13 +18,13 @@ type Client struct {
 type Message struct {
 	Message string `json:"message"`
 	UserId  int64  `json:"user_id"`
-	ChatId  int64  `json:"chat_id"`
+	ChatId  string `json:"chat_id"`
 }
 
 type KafkaJson struct {
 	Message string `json:"message"`
 	UserId  int64  `json:"user_id"`
-	ChatId  int64  `json:"chat_id"`
+	ChatId  string `json:"chat_id"`
 }
 
 func (c *Client) ReadPump(hub *Hub) {

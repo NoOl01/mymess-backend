@@ -15,18 +15,17 @@ type Server struct {
 	pb.UnimplementedScyllaServiceServer
 }
 
-type newChats struct {
-	UserId         int64
-	InterlocutorId int64
-	Content        string
-}
-
 func (s *Server) UploadMessages(_ context.Context, req *pb.UploadMessagesRequest) (*pb.BaseResultResponse, error) {
 	messages := req.GetMessages()
-	pendingMessages := make(map[string][]newChats)
+	pendingMessages := make(map[string][]queries.MessageData)
+
+	fmt.Printf("Processing %d messages\n", len(messages))
 
 	for _, message := range messages {
+		fmt.Printf("Message: ChatId='%s', UserId=%d, Message='%s'\n", message.ChatId, message.UserId, message.Message)
+
 		if strings.HasPrefix(message.ChatId, "-1") && message.ChatId != "" {
+			fmt.Printf("Creating new chat for ChatId: %s\n", message.ChatId)
 			interlocutorIdStr := message.ChatId[2:]
 			interlocutorId, err := strconv.ParseInt(interlocutorIdStr, 10, 64)
 			if err != nil {
@@ -34,61 +33,49 @@ func (s *Server) UploadMessages(_ context.Context, req *pb.UploadMessagesRequest
 					Result: fmt.Sprintf("Invalid interlocutor ID: %s", err.Error()),
 				}, err
 			}
-			pendingMessages[message.ChatId] = append(pendingMessages[message.ChatId], newChats{
+			pendingMessages[message.ChatId] = append(pendingMessages[message.ChatId], queries.MessageData{
 				UserId:         message.UserId,
 				InterlocutorId: interlocutorId,
 				Content:        message.Message,
 			})
 		} else {
-			continue
+			fmt.Printf("Using existing chat: %s\n", message.ChatId)
 		}
 	}
 
-	var chats map[int64]string
+	var chatIdToUUID map[string]string
+
 	if len(pendingMessages) > 0 {
-		var userIds []int64
-		var interlocutorIds []int64
-		uniquePairs := make(map[string]bool)
-
-		for _, chatList := range pendingMessages {
-			for _, chat := range chatList {
-				key := generateChatKey(chat.UserId, chat.InterlocutorId)
-				if uniquePairs[key] {
-					continue
-				}
-				uniquePairs[key] = true
-
-				userIds = append(userIds, chat.UserId)
-				interlocutorIds = append(interlocutorIds, chat.InterlocutorId)
-			}
-		}
-
+		fmt.Printf("Creating %d new chats\n", len(pendingMessages))
 		var err error
-		chats, err = queries.InsertPrivateChatBatch(userIds, interlocutorIds)
+		chatIdToUUID, err = queries.InsertPrivateChatBatch(pendingMessages)
 		if err != nil {
 			return &pb.BaseResultResponse{
 				Result: err.Error(),
 			}, err
 		}
+		fmt.Printf("Created chats: %+v\n", chatIdToUUID)
 	}
 
 	var newMessages []queries.MessageStruct
 
 	for _, message := range messages {
 		if strings.HasPrefix(message.ChatId, "-1") {
-			chatUUID := chats[message.UserId]
+			chatUUID := chatIdToUUID[message.ChatId]
 			if chatUUID == "" {
 				return &pb.BaseResultResponse{
 					Result: "Chat UUID not found for new chat",
-				}, fmt.Errorf("chat UUID not found for user %d", message.UserId)
+				}, fmt.Errorf("chat UUID not found for chatId %s", message.ChatId)
 			}
 
+			fmt.Printf("Adding message for new chat - Original: %s, UUID: %s\n", message.ChatId, chatUUID)
 			newMessages = append(newMessages, queries.MessageStruct{
 				ChatId:  chatUUID,
 				UserId:  message.UserId,
 				Message: message.Message,
 			})
 		} else {
+			fmt.Printf("Adding message for existing chat: %s\n", message.ChatId)
 			newMessages = append(newMessages, queries.MessageStruct{
 				ChatId:  message.ChatId,
 				UserId:  message.UserId,
@@ -97,6 +84,7 @@ func (s *Server) UploadMessages(_ context.Context, req *pb.UploadMessagesRequest
 		}
 	}
 
+	fmt.Printf("Inserting %d messages\n", len(newMessages))
 	if err := queries.InsertMessageBatch(newMessages); err != nil {
 		return &pb.BaseResultResponse{
 			Result: err.Error(),
@@ -104,13 +92,6 @@ func (s *Server) UploadMessages(_ context.Context, req *pb.UploadMessagesRequest
 	}
 
 	return &pb.BaseResultResponse{Result: succ.Ok}, nil
-}
-
-func generateChatKey(id1, id2 int64) string {
-	if id1 < id2 {
-		return fmt.Sprintf("%d:%d", id1, id2)
-	}
-	return fmt.Sprintf("%d:%d", id2, id1)
 }
 
 func (s *Server) Ping(_ context.Context, _ *emptypb.Empty) (*pb.BaseResultResponse, error) {

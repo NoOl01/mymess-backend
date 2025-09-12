@@ -9,14 +9,13 @@ import (
 	"proto/scyllapb"
 	"results/errs"
 	"results/succ"
-	"strconv"
 	"time"
 )
 
 type KafkaJson struct {
 	Message string `json:"message"`
 	UserId  int64  `json:"user_id"`
-	ChatId  int64  `json:"chat_id"`
+	ChatId  string `json:"chat_id"`
 }
 
 type Consumer struct {
@@ -103,7 +102,7 @@ func (c *Consumer) flush(batch []KafkaJson, messages []*kafka.Message) {
 		grpcMessages = append(grpcMessages, &scyllapb.ChatMessage{
 			Message: message.Message,
 			UserId:  message.UserId,
-			ChatId:  strconv.FormatInt(message.ChatId, 10),
+			ChatId:  message.ChatId,
 		})
 	}
 

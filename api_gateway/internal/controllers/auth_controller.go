@@ -256,3 +256,35 @@ func (auth *AuthController) UpdatePassword(c *gin.Context) {
 		Error:  nil,
 	})
 }
+
+// MyProfile
+// @Summary Обновление пароля
+// @Tags auth
+// @Accept       json
+// @Produce      json
+// @Security     Token
+// @Router /auth/my_profile [get]
+func (auth *AuthController) MyProfile(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, models.BaseResult{
+			Result: nil,
+			Error:  strPointer(errs.MissingToken.Error()),
+		})
+		return
+	}
+
+	resp, err := client.MyProfile(auth.Client, token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BaseResult{
+			Result: nil,
+			Error:  strPointer(err.Error()),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BaseResult{
+		Result: resp,
+		Error:  nil,
+	})
+}

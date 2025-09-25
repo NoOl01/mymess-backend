@@ -41,6 +41,26 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/auth/my_profile": {
+            "get": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Обновление пароля",
+                "responses": {}
+            }
+        },
         "/auth/refresh": {
             "post": {
                 "consumes": [
@@ -224,7 +244,7 @@ const docTemplate = `{
                 "tags": [
                     "profile"
                 ],
-                "summary": "Обновить nickname",
+                "summary": "Обновить bio",
                 "parameters": [
                     {
                         "description": "Данные для обновления профиля",

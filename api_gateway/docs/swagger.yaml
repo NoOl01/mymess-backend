@@ -71,6 +71,18 @@ paths:
       summary: Авторизация
       tags:
       - auth
+  /auth/my_profile:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Token: []
+      summary: Обновление пароля
+      tags:
+      - auth
   /auth/refresh:
     post:
       consumes:
@@ -198,7 +210,7 @@ paths:
       responses: {}
       security:
       - Token: []
-      summary: Обновить nickname
+      summary: Обновить bio
       tags:
       - profile
   /profile/update_nickname:

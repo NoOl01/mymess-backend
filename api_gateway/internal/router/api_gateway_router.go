@@ -33,6 +33,7 @@ func Router(router *gin.Engine,
 			auth.POST("/send_otp", authController.SendOtpCode)
 			auth.POST("/reset_password", authController.ResetPassword)
 			auth.POST("/update_password", authController.UpdatePassword)
+			auth.GET("/my_profile", authController.MyProfile)
 		}
 		profile := api.Group("/profile")
 		{
@@ -40,6 +41,7 @@ func Router(router *gin.Engine,
 
 			profile.POST("/update_nickname", profileController.UpdateNickname)
 			profile.POST("/update_email", profileController.UpdateNickname)
+			profile.POST("/update_bio", profileController.UpdateBio)
 			profile.GET("/info", profileController.GetProfileInfo)
 		}
 		search := api.Group("/search")

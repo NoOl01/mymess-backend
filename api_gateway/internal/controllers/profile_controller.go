@@ -32,6 +32,7 @@ func (profile *ProfileController) UpdateNickname(c *gin.Context) {
 			Result: nil,
 			Error:  strPointer(errs.MissingToken.Error()),
 		})
+		return
 	}
 
 	body := models.UpdateProfile{}
@@ -40,6 +41,7 @@ func (profile *ProfileController) UpdateNickname(c *gin.Context) {
 			Result: nil,
 			Error:  strPointer(errs.InvalidRequestBody.Error()),
 		})
+		return
 	}
 
 	resp, err := client.UpdateProfile(profile.Client, body.Value, "nickname", token)
@@ -48,6 +50,7 @@ func (profile *ProfileController) UpdateNickname(c *gin.Context) {
 			Result: nil,
 			Error:  strPointer(err.Error()),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, models.BaseResult{
@@ -71,6 +74,7 @@ func (profile *ProfileController) UpdateEmail(c *gin.Context) {
 			Result: nil,
 			Error:  strPointer(errs.MissingToken.Error()),
 		})
+		return
 	}
 
 	body := models.UpdateProfile{}
@@ -79,6 +83,7 @@ func (profile *ProfileController) UpdateEmail(c *gin.Context) {
 			Result: nil,
 			Error:  strPointer(errs.InvalidRequestBody.Error()),
 		})
+		return
 	}
 
 	resp, err := client.UpdateProfile(profile.Client, body.Value, "nickname", token)
@@ -87,6 +92,49 @@ func (profile *ProfileController) UpdateEmail(c *gin.Context) {
 			Result: nil,
 			Error:  strPointer(err.Error()),
 		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BaseResult{
+		Result: resp.Result,
+		Error:  nil,
+	})
+}
+
+// UpdateBio
+// @Summary Обновить bio
+// @Tags profile
+// @Accept       json
+// @Produce      json
+// @Param        input  body      models.UpdateProfile  true  "Данные для обновления профиля"
+// @Security     Token
+// @Router       /profile/update_bio [post]
+func (profile *ProfileController) UpdateBio(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, models.BaseResult{
+			Result: nil,
+			Error:  strPointer(errs.MissingToken.Error()),
+		})
+		return
+	}
+
+	body := models.UpdateProfile{}
+	if err := c.ShouldBindJSON(&body); err != nil && body.Value != "" {
+		c.JSON(http.StatusBadRequest, models.BaseResult{
+			Result: nil,
+			Error:  strPointer(errs.InvalidRequestBody.Error()),
+		})
+		return
+	}
+
+	resp, err := client.UpdateProfile(profile.Client, body.Value, "bio", token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.BaseResult{
+			Result: nil,
+			Error:  strPointer(err.Error()),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, models.BaseResult{

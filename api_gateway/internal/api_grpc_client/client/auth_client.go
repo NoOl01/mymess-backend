@@ -99,14 +99,18 @@ func UpdatePassword(client authpb.AuthServiceClient, email, password, resetToken
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := client.UpdatePassword(ctx, &authpb.UpdatePasswordRequest{
+	return client.UpdatePassword(ctx, &authpb.UpdatePasswordRequest{
 		Email:      email,
 		Password:   password,
 		ResetToken: resetToken,
 	})
-	if err != nil {
-		return nil, err
-	}
+}
 
-	return resp, nil
+func MyProfile(client authpb.AuthServiceClient, token string) (*authpb.MyProfileResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	return client.MyProfile(ctx, &authpb.MyProfileRequest{
+		Token: token,
+	})
 }

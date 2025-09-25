@@ -73,6 +73,7 @@ func (s *Server) UploadMessages(_ context.Context, req *pb.UploadMessagesRequest
 				ChatId:  chatUUID,
 				UserId:  message.UserId,
 				Message: message.Message,
+				Time:    message.Time.AsTime(),
 			})
 		} else {
 			fmt.Printf("Adding message for existing chat: %s\n", message.ChatId)
@@ -80,6 +81,7 @@ func (s *Server) UploadMessages(_ context.Context, req *pb.UploadMessagesRequest
 				ChatId:  message.ChatId,
 				UserId:  message.UserId,
 				Message: message.Message,
+				Time:    message.Time.AsTime(),
 			})
 		}
 	}

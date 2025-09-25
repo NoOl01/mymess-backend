@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"proto/scyllapb"
 	"results/errs"
@@ -13,9 +14,10 @@ import (
 )
 
 type KafkaJson struct {
-	Message string `json:"message"`
-	UserId  int64  `json:"user_id"`
-	ChatId  string `json:"chat_id"`
+	Message string    `json:"message"`
+	UserId  int64     `json:"user_id"`
+	ChatId  string    `json:"chat_id"`
+	Time    time.Time `json:"time"`
 }
 
 type Consumer struct {
@@ -103,6 +105,7 @@ func (c *Consumer) flush(batch []KafkaJson, messages []*kafka.Message) {
 			Message: message.Message,
 			UserId:  message.UserId,
 			ChatId:  message.ChatId,
+			Time:    timestamppb.New(message.Time),
 		})
 	}
 

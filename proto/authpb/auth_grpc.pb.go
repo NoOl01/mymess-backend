@@ -26,6 +26,7 @@ const (
 	AuthService_SendOtp_FullMethodName        = "/auth.AuthService/SendOtp"
 	AuthService_ResetPassword_FullMethodName  = "/auth.AuthService/ResetPassword"
 	AuthService_UpdatePassword_FullMethodName = "/auth.AuthService/UpdatePassword"
+	AuthService_MyProfile_FullMethodName      = "/auth.AuthService/MyProfile"
 	AuthService_Ping_FullMethodName           = "/auth.AuthService/Ping"
 )
 
@@ -39,6 +40,7 @@ type AuthServiceClient interface {
 	SendOtp(ctx context.Context, in *SendOtpRequest, opts ...grpc.CallOption) (*BaseResultResponse, error)
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ResetPasswordResponse, error)
 	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*BaseResultResponse, error)
+	MyProfile(ctx context.Context, in *MyProfileRequest, opts ...grpc.CallOption) (*MyProfileResponse, error)
 	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error)
 }
 
@@ -110,6 +112,16 @@ func (c *authServiceClient) UpdatePassword(ctx context.Context, in *UpdatePasswo
 	return out, nil
 }
 
+func (c *authServiceClient) MyProfile(ctx context.Context, in *MyProfileRequest, opts ...grpc.CallOption) (*MyProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MyProfileResponse)
+	err := c.cc.Invoke(ctx, AuthService_MyProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BaseResultResponse)
@@ -130,6 +142,7 @@ type AuthServiceServer interface {
 	SendOtp(context.Context, *SendOtpRequest) (*BaseResultResponse, error)
 	ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error)
 	UpdatePassword(context.Context, *UpdatePasswordRequest) (*BaseResultResponse, error)
+	MyProfile(context.Context, *MyProfileRequest) (*MyProfileResponse, error)
 	Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -158,6 +171,9 @@ func (UnimplementedAuthServiceServer) ResetPassword(context.Context, *ResetPassw
 }
 func (UnimplementedAuthServiceServer) UpdatePassword(context.Context, *UpdatePasswordRequest) (*BaseResultResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
+}
+func (UnimplementedAuthServiceServer) MyProfile(context.Context, *MyProfileRequest) (*MyProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MyProfile not implemented")
 }
 func (UnimplementedAuthServiceServer) Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
@@ -291,6 +307,24 @@ func _AuthService_UpdatePassword_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_MyProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MyProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).MyProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_MyProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).MyProfile(ctx, req.(*MyProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -339,6 +373,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdatePassword",
 			Handler:    _AuthService_UpdatePassword_Handler,
+		},
+		{
+			MethodName: "MyProfile",
+			Handler:    _AuthService_MyProfile_Handler,
 		},
 		{
 			MethodName: "Ping",

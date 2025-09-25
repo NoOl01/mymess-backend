@@ -169,6 +169,8 @@ func (s *Server) UpdateProfile(_ context.Context, req *pb.UpdateRequest) (*pb.Ba
 		user.AvatarPath = value
 	case "banner":
 		user.BannerPath = value
+	case "bio":
+		user.Bio = value
 	default:
 		return &pb.BaseResultResponse{
 			Result: errs.UnknownType.Error(),
@@ -246,6 +248,35 @@ func (s *Server) GetProfileInfo(_ context.Context, req *pb.GetProfileInfoRequest
 	}
 
 	return &pb.GetProfileInfoResponse{
+		Body: &body,
+	}, nil
+}
+
+func (s *Server) MyProfile(_ context.Context, req *pb.GetProfileInfoRequest) (*pb.MyProfileResponse, error) {
+	id := req.GetId()
+
+	var user db_models.User
+	if err := s.Db.Where("id = ?", id).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &pb.MyProfileResponse{
+				Error: errs.RecordNotFound.Error(),
+			}, errs.RecordNotFound
+		}
+		return &pb.MyProfileResponse{
+			Error: err.Error(),
+		}, err
+	}
+
+	body := pb.FindProfileBody{
+		Id:           user.Id,
+		Nickname:     user.Nickname,
+		Username:     user.Username,
+		Avatar:       user.AvatarPath,
+		Banner:       user.BannerPath,
+		RegisteredAt: user.RegisterDate.Format("2006-01-02T15:04:05Z"),
+	}
+
+	return &pb.MyProfileResponse{
 		Body: &body,
 	}, nil
 }

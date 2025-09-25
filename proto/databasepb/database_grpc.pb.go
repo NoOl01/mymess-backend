@@ -26,6 +26,7 @@ const (
 	DatabaseService_UpdateProfile_FullMethodName  = "/database.DatabaseService/UpdateProfile"
 	DatabaseService_FindProfile_FullMethodName    = "/database.DatabaseService/FindProfile"
 	DatabaseService_GetProfileInfo_FullMethodName = "/database.DatabaseService/GetProfileInfo"
+	DatabaseService_MyProfile_FullMethodName      = "/database.DatabaseService/MyProfile"
 	DatabaseService_Ping_FullMethodName           = "/database.DatabaseService/Ping"
 )
 
@@ -39,6 +40,7 @@ type DatabaseServiceClient interface {
 	UpdateProfile(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*BaseResultResponse, error)
 	FindProfile(ctx context.Context, in *FindProfileRequest, opts ...grpc.CallOption) (*FindProfileResponse, error)
 	GetProfileInfo(ctx context.Context, in *GetProfileInfoRequest, opts ...grpc.CallOption) (*GetProfileInfoResponse, error)
+	MyProfile(ctx context.Context, in *GetProfileInfoRequest, opts ...grpc.CallOption) (*MyProfileResponse, error)
 	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error)
 }
 
@@ -110,6 +112,16 @@ func (c *databaseServiceClient) GetProfileInfo(ctx context.Context, in *GetProfi
 	return out, nil
 }
 
+func (c *databaseServiceClient) MyProfile(ctx context.Context, in *GetProfileInfoRequest, opts ...grpc.CallOption) (*MyProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MyProfileResponse)
+	err := c.cc.Invoke(ctx, DatabaseService_MyProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *databaseServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BaseResultResponse)
@@ -130,6 +142,7 @@ type DatabaseServiceServer interface {
 	UpdateProfile(context.Context, *UpdateRequest) (*BaseResultResponse, error)
 	FindProfile(context.Context, *FindProfileRequest) (*FindProfileResponse, error)
 	GetProfileInfo(context.Context, *GetProfileInfoRequest) (*GetProfileInfoResponse, error)
+	MyProfile(context.Context, *GetProfileInfoRequest) (*MyProfileResponse, error)
 	Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error)
 	mustEmbedUnimplementedDatabaseServiceServer()
 }
@@ -158,6 +171,9 @@ func (UnimplementedDatabaseServiceServer) FindProfile(context.Context, *FindProf
 }
 func (UnimplementedDatabaseServiceServer) GetProfileInfo(context.Context, *GetProfileInfoRequest) (*GetProfileInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProfileInfo not implemented")
+}
+func (UnimplementedDatabaseServiceServer) MyProfile(context.Context, *GetProfileInfoRequest) (*MyProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MyProfile not implemented")
 }
 func (UnimplementedDatabaseServiceServer) Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
@@ -291,6 +307,24 @@ func _DatabaseService_GetProfileInfo_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatabaseService_MyProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProfileInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseServiceServer).MyProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatabaseService_MyProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseServiceServer).MyProfile(ctx, req.(*GetProfileInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DatabaseService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -339,6 +373,10 @@ var DatabaseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProfileInfo",
 			Handler:    _DatabaseService_GetProfileInfo_Handler,
+		},
+		{
+			MethodName: "MyProfile",
+			Handler:    _DatabaseService_MyProfile_Handler,
 		},
 		{
 			MethodName: "Ping",

@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package media;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "proto/mediapb";
+
+service MediaService {
+  rpc UpdateAvatar (UpdateAvatarRequest) returns (ErrorResponse);
+  rpc GetAvatar (GetAvatarRequest) returns (GetImageResponse);
+
+  rpc Ping (google.protobuf.Empty) returns (PingResponse);
+}
+
+// Requests
+message UpdateAvatarRequest {
+  oneof data {
+    FileMetadata metadata = 1;
+    bytes content = 2;
+  }
+}
+
+message FileMetadata {
+  string filename = 1;
+  string content_type = 2;
+}
+
+message GetAvatarRequest {
+  string filepath = 1;
+}
+
+// Response
+message ErrorResponse {
+  string error = 1;
+}
+
+message GetImageResponse {
+  string error = 1;
+  bytes content = 2;
+}
+
+message PingResponse {
+  string result = 1;
+}

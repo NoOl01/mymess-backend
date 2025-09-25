@@ -6,6 +6,7 @@ type User struct {
 	Id           int64       `gorm:"primaryKey;autoIncrement" json:"id"`
 	Nickname     string      `gorm:"not null;size:30" json:"nickname"`
 	Username     string      `gorm:"size:30" json:"username"`
+	Bio          string      `gorm:"size:500" json:"bio"`
 	Email        string      `gorm:"unique;not null;size:50" json:"email"`
 	Password     string      `gorm:"not null;" json:"password"`
 	AvatarPath   string      `gorm:"size:255" json:"avatar_path"`

@@ -658,6 +658,58 @@ func (x *GetProfileInfoResponse) GetError() string {
 	return ""
 }
 
+type MyProfileResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Body          *FindProfileBody       `protobuf:"bytes,1,opt,name=body,proto3" json:"body,omitempty"`
+	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MyProfileResponse) Reset() {
+	*x = MyProfileResponse{}
+	mi := &file_proto_database_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MyProfileResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MyProfileResponse) ProtoMessage() {}
+
+func (x *MyProfileResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_database_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MyProfileResponse.ProtoReflect.Descriptor instead.
+func (*MyProfileResponse) Descriptor() ([]byte, []int) {
+	return file_proto_database_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *MyProfileResponse) GetBody() *FindProfileBody {
+	if x != nil {
+		return x.Body
+	}
+	return nil
+}
+
+func (x *MyProfileResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
 var File_proto_database_proto protoreflect.FileDescriptor
 
 const file_proto_database_proto_rawDesc = "" +
@@ -700,14 +752,18 @@ const file_proto_database_proto_rawDesc = "" +
 	"\x05error\x18\x02 \x01(\tR\x05error\"]\n" +
 	"\x16GetProfileInfoResponse\x12-\n" +
 	"\x04body\x18\x01 \x01(\v2\x19.database.FindProfileBodyR\x04body\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error2\x8a\x04\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\"X\n" +
+	"\x11MyProfileResponse\x12-\n" +
+	"\x04body\x18\x01 \x01(\v2\x19.database.FindProfileBodyR\x04body\x12\x14\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error2\xd5\x04\n" +
 	"\x0fDatabaseService\x12B\n" +
 	"\bRegister\x12\x1e.database.CreateNewUserRequest\x1a\x16.database.AuthResponse\x12;\n" +
 	"\x05Login\x12\x1a.database.LoginUserRequest\x1a\x16.database.AuthResponse\x12O\n" +
 	"\x0eUpdatePassword\x12\x1f.database.UpdatePasswordRequest\x1a\x1c.database.BaseResultResponse\x12F\n" +
 	"\rUpdateProfile\x12\x17.database.UpdateRequest\x1a\x1c.database.BaseResultResponse\x12J\n" +
 	"\vFindProfile\x12\x1c.database.FindProfileRequest\x1a\x1d.database.FindProfileResponse\x12S\n" +
-	"\x0eGetProfileInfo\x12\x1f.database.GetProfileInfoRequest\x1a .database.GetProfileInfoResponse\x12<\n" +
+	"\x0eGetProfileInfo\x12\x1f.database.GetProfileInfoRequest\x1a .database.GetProfileInfoResponse\x12I\n" +
+	"\tMyProfile\x12\x1f.database.GetProfileInfoRequest\x1a\x1b.database.MyProfileResponse\x12<\n" +
 	"\x04Ping\x12\x16.google.protobuf.Empty\x1a\x1c.database.BaseResultResponseB\x12Z\x10proto/databasepbb\x06proto3"
 
 var (
@@ -722,7 +778,7 @@ func file_proto_database_proto_rawDescGZIP() []byte {
 	return file_proto_database_proto_rawDescData
 }
 
-var file_proto_database_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_proto_database_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_proto_database_proto_goTypes = []any{
 	(*CreateNewUserRequest)(nil),   // 0: database.CreateNewUserRequest
 	(*LoginUserRequest)(nil),       // 1: database.LoginUserRequest
@@ -735,30 +791,34 @@ var file_proto_database_proto_goTypes = []any{
 	(*FindProfileBody)(nil),        // 8: database.FindProfileBody
 	(*FindProfileResponse)(nil),    // 9: database.FindProfileResponse
 	(*GetProfileInfoResponse)(nil), // 10: database.GetProfileInfoResponse
-	(*emptypb.Empty)(nil),          // 11: google.protobuf.Empty
+	(*MyProfileResponse)(nil),      // 11: database.MyProfileResponse
+	(*emptypb.Empty)(nil),          // 12: google.protobuf.Empty
 }
 var file_proto_database_proto_depIdxs = []int32{
 	8,  // 0: database.FindProfileResponse.body:type_name -> database.FindProfileBody
 	8,  // 1: database.GetProfileInfoResponse.body:type_name -> database.FindProfileBody
-	0,  // 2: database.DatabaseService.Register:input_type -> database.CreateNewUserRequest
-	1,  // 3: database.DatabaseService.Login:input_type -> database.LoginUserRequest
-	2,  // 4: database.DatabaseService.UpdatePassword:input_type -> database.UpdatePasswordRequest
-	3,  // 5: database.DatabaseService.UpdateProfile:input_type -> database.UpdateRequest
-	4,  // 6: database.DatabaseService.FindProfile:input_type -> database.FindProfileRequest
-	5,  // 7: database.DatabaseService.GetProfileInfo:input_type -> database.GetProfileInfoRequest
-	11, // 8: database.DatabaseService.Ping:input_type -> google.protobuf.Empty
-	7,  // 9: database.DatabaseService.Register:output_type -> database.AuthResponse
-	7,  // 10: database.DatabaseService.Login:output_type -> database.AuthResponse
-	6,  // 11: database.DatabaseService.UpdatePassword:output_type -> database.BaseResultResponse
-	6,  // 12: database.DatabaseService.UpdateProfile:output_type -> database.BaseResultResponse
-	9,  // 13: database.DatabaseService.FindProfile:output_type -> database.FindProfileResponse
-	10, // 14: database.DatabaseService.GetProfileInfo:output_type -> database.GetProfileInfoResponse
-	6,  // 15: database.DatabaseService.Ping:output_type -> database.BaseResultResponse
-	9,  // [9:16] is the sub-list for method output_type
-	2,  // [2:9] is the sub-list for method input_type
-	2,  // [2:2] is the sub-list for extension type_name
-	2,  // [2:2] is the sub-list for extension extendee
-	0,  // [0:2] is the sub-list for field type_name
+	8,  // 2: database.MyProfileResponse.body:type_name -> database.FindProfileBody
+	0,  // 3: database.DatabaseService.Register:input_type -> database.CreateNewUserRequest
+	1,  // 4: database.DatabaseService.Login:input_type -> database.LoginUserRequest
+	2,  // 5: database.DatabaseService.UpdatePassword:input_type -> database.UpdatePasswordRequest
+	3,  // 6: database.DatabaseService.UpdateProfile:input_type -> database.UpdateRequest
+	4,  // 7: database.DatabaseService.FindProfile:input_type -> database.FindProfileRequest
+	5,  // 8: database.DatabaseService.GetProfileInfo:input_type -> database.GetProfileInfoRequest
+	5,  // 9: database.DatabaseService.MyProfile:input_type -> database.GetProfileInfoRequest
+	12, // 10: database.DatabaseService.Ping:input_type -> google.protobuf.Empty
+	7,  // 11: database.DatabaseService.Register:output_type -> database.AuthResponse
+	7,  // 12: database.DatabaseService.Login:output_type -> database.AuthResponse
+	6,  // 13: database.DatabaseService.UpdatePassword:output_type -> database.BaseResultResponse
+	6,  // 14: database.DatabaseService.UpdateProfile:output_type -> database.BaseResultResponse
+	9,  // 15: database.DatabaseService.FindProfile:output_type -> database.FindProfileResponse
+	10, // 16: database.DatabaseService.GetProfileInfo:output_type -> database.GetProfileInfoResponse
+	11, // 17: database.DatabaseService.MyProfile:output_type -> database.MyProfileResponse
+	6,  // 18: database.DatabaseService.Ping:output_type -> database.BaseResultResponse
+	11, // [11:19] is the sub-list for method output_type
+	3,  // [3:11] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_proto_database_proto_init() }
@@ -776,7 +836,7 @@ func file_proto_database_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_database_proto_rawDesc), len(file_proto_database_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

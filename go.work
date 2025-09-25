@@ -13,4 +13,5 @@ use (
 	./chat_kafka_consumer
 	./scylla
 	./profile
+	media
 )

@@ -58,3 +58,12 @@ func UpdatePassword(client databasepb.DatabaseServiceClient, email, password str
 		Password: password,
 	})
 }
+
+func MyProfile(client databasepb.DatabaseServiceClient, id int64) (*databasepb.MyProfileResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	return client.MyProfile(ctx, &databasepb.GetProfileInfoRequest{
+		Id: id,
+	})
+}

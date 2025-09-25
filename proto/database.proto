@@ -13,6 +13,7 @@ service DatabaseService {
   rpc UpdateProfile (UpdateRequest) returns (BaseResultResponse);
   rpc FindProfile (FindProfileRequest) returns (FindProfileResponse);
   rpc GetProfileInfo (GetProfileInfoRequest) returns (GetProfileInfoResponse);
+  rpc MyProfile (GetProfileInfoRequest) returns (MyProfileResponse);
 
   rpc Ping (google.protobuf.Empty) returns (BaseResultResponse);
 }
@@ -76,6 +77,11 @@ message FindProfileResponse {
 }
 
 message GetProfileInfoResponse {
+  FindProfileBody body = 1;
+  string error = 2;
+}
+
+message MyProfileResponse {
   FindProfileBody body = 1;
   string error = 2;
 }

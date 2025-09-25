@@ -13,6 +13,7 @@ service AuthService {
   rpc SendOtp (SendOtpRequest) returns (BaseResultResponse);
   rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
   rpc UpdatePassword (UpdatePasswordRequest) returns (BaseResultResponse);
+  rpc MyProfile (MyProfileRequest) returns (MyProfileResponse);
 
   rpc Ping (google.protobuf.Empty) returns (BaseResultResponse);
 }
@@ -51,6 +52,10 @@ message UpdatePasswordRequest {
   string reset_token = 3;
 }
 
+message MyProfileRequest {
+  string token = 1;
+}
+
 // Responses
 message BaseResultResponse {
   string result = 1;
@@ -64,4 +69,18 @@ message AuthResponse {
 message ResetPasswordResponse {
   string result = 1;
   string reset_token = 2;
+}
+
+message FindProfileBody {
+  int64 id = 1;
+  string nickname = 2;
+  string username = 3;
+  string avatar = 4;
+  string banner = 5;
+  string registered_at = 6;
+}
+
+message MyProfileResponse {
+  FindProfileBody body = 1;
+  string error = 2;
 }

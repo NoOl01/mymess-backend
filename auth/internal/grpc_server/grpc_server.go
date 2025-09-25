@@ -13,6 +13,7 @@ import (
 	"proto/smtppb"
 	"results/errs"
 	"results/succ"
+	"strconv"
 )
 
 type Server struct {
@@ -180,6 +181,39 @@ func (s *Server) UpdatePassword(_ context.Context, req *pb.UpdatePasswordRequest
 	return &pb.BaseResultResponse{
 		Result: resp.Result,
 	}, nil
+}
+
+func (s *Server) MyProfile(_ context.Context, req *pb.MyProfileRequest) (*pb.MyProfileResponse, error) {
+	token := req.Token
+
+	if token == "" {
+		return &pb.MyProfileResponse{Error: errs.MissingToken.Error()}, nil
+	}
+
+	userId, err := jwt.ValidateJwt(token)
+	if err != nil {
+		return &pb.MyProfileResponse{
+			Error: err.Error(),
+		}, err
+	}
+
+	id, err := strconv.ParseInt(userId, 10, 64)
+
+	resp, err := grpc_client.MyProfile(s.Client, id)
+	if err != nil {
+		return &pb.MyProfileResponse{
+			Error: err.Error(),
+		}, err
+	}
+
+	return &pb.MyProfileResponse{Body: &pb.FindProfileBody{
+		Id:           resp.Body.Id,
+		Nickname:     resp.Body.Nickname,
+		Username:     resp.Body.Username,
+		Avatar:       resp.Body.Avatar,
+		Banner:       resp.Body.Banner,
+		RegisteredAt: resp.Body.RegisteredAt,
+	}}, nil
 }
 
 func (s *Server) Ping(_ context.Context, _ *emptypb.Empty) (*pb.BaseResultResponse, error) {

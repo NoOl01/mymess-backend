@@ -228,7 +228,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/profile/update_email": {
+        "/profile/update_bio": {
             "post": {
                 "security": [
                     {
@@ -245,6 +245,37 @@ const docTemplate = `{
                     "profile"
                 ],
                 "summary": "Обновить bio",
+                "parameters": [
+                    {
+                        "description": "Данные для обновления профиля",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateProfile"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/profile/update_email": {
+            "post": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Обновить nickname",
                 "parameters": [
                     {
                         "description": "Данные для обновления профиля",

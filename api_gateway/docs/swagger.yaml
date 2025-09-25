@@ -194,7 +194,7 @@ paths:
       summary: Получение профиля пользователя по id
       tags:
       - profile
-  /profile/update_email:
+  /profile/update_bio:
     post:
       consumes:
       - application/json
@@ -211,6 +211,25 @@ paths:
       security:
       - Token: []
       summary: Обновить bio
+      tags:
+      - profile
+  /profile/update_email:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные для обновления профиля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateProfile'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Token: []
+      summary: Обновить nickname
       tags:
       - profile
   /profile/update_nickname:

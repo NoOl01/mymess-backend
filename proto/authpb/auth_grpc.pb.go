@@ -27,6 +27,7 @@ const (
 	AuthService_ResetPassword_FullMethodName  = "/auth.AuthService/ResetPassword"
 	AuthService_UpdatePassword_FullMethodName = "/auth.AuthService/UpdatePassword"
 	AuthService_MyProfile_FullMethodName      = "/auth.AuthService/MyProfile"
+	AuthService_GetUserId_FullMethodName      = "/auth.AuthService/GetUserId"
 	AuthService_Ping_FullMethodName           = "/auth.AuthService/Ping"
 )
 
@@ -41,6 +42,7 @@ type AuthServiceClient interface {
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ResetPasswordResponse, error)
 	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*BaseResultResponse, error)
 	MyProfile(ctx context.Context, in *MyProfileRequest, opts ...grpc.CallOption) (*MyProfileResponse, error)
+	GetUserId(ctx context.Context, in *Token, opts ...grpc.CallOption) (*BaseResultResponse, error)
 	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error)
 }
 
@@ -122,6 +124,16 @@ func (c *authServiceClient) MyProfile(ctx context.Context, in *MyProfileRequest,
 	return out, nil
 }
 
+func (c *authServiceClient) GetUserId(ctx context.Context, in *Token, opts ...grpc.CallOption) (*BaseResultResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BaseResultResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetUserId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BaseResultResponse)
@@ -143,6 +155,7 @@ type AuthServiceServer interface {
 	ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error)
 	UpdatePassword(context.Context, *UpdatePasswordRequest) (*BaseResultResponse, error)
 	MyProfile(context.Context, *MyProfileRequest) (*MyProfileResponse, error)
+	GetUserId(context.Context, *Token) (*BaseResultResponse, error)
 	Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -174,6 +187,9 @@ func (UnimplementedAuthServiceServer) UpdatePassword(context.Context, *UpdatePas
 }
 func (UnimplementedAuthServiceServer) MyProfile(context.Context, *MyProfileRequest) (*MyProfileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MyProfile not implemented")
+}
+func (UnimplementedAuthServiceServer) GetUserId(context.Context, *Token) (*BaseResultResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserId not implemented")
 }
 func (UnimplementedAuthServiceServer) Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
@@ -325,6 +341,24 @@ func _AuthService_MyProfile_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Token)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetUserId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetUserId(ctx, req.(*Token))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -377,6 +411,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MyProfile",
 			Handler:    _AuthService_MyProfile_Handler,
+		},
+		{
+			MethodName: "GetUserId",
+			Handler:    _AuthService_GetUserId_Handler,
 		},
 		{
 			MethodName: "Ping",

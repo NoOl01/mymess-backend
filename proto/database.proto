@@ -66,9 +66,10 @@ message FindProfileBody {
   int64 id = 1;
   string nickname = 2;
   string username = 3;
-  string avatar = 4;
-  string banner = 5;
-  string registered_at = 6;
+  string bio = 4;
+  string avatar = 5;
+  string banner = 6;
+  string registered_at = 7;
 }
 
 message FindProfileResponse {

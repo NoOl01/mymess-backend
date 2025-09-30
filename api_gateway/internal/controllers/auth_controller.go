@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"proto/authpb"
 	"results/errs"
+	"strings"
 )
 
 type AuthController struct {
@@ -274,6 +275,15 @@ func (auth *AuthController) MyProfile(c *gin.Context) {
 		return
 	}
 
+	if !strings.HasPrefix(token, "Bearer") {
+		c.JSON(http.StatusUnauthorized, models.BaseResult{
+			Result: nil,
+			Error:  strPointer(errs.InvalidToken.Error()),
+		})
+		return
+	}
+	token = strings.ReplaceAll(token, "Bearer ", "")
+
 	resp, err := client.MyProfile(auth.Client, token)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.BaseResult{
@@ -284,7 +294,14 @@ func (auth *AuthController) MyProfile(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.BaseResult{
-		Result: resp,
-		Error:  nil,
+		Result: models.ProfileBody{
+			Id:           resp.Body.Id,
+			Nickname:     resp.Body.Nickname,
+			Username:     resp.Body.Username,
+			Avatar:       resp.Body.Avatar,
+			Banner:       resp.Body.Banner,
+			RegisteredAt: resp.Body.RegisteredAt,
+		},
+		Error: nil,
 	})
 }

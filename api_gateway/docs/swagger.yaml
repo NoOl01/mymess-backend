@@ -168,6 +168,18 @@ paths:
       summary: Обновление пароля
       tags:
       - auth
+  /chat/get_chats:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Token: []
+      summary: получение списка чатов
+      tags:
+      - chat
   /ping:
     get:
       description: Публичный запрос, который клиент отправляет при запуске. Возвращает

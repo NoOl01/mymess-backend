@@ -271,6 +271,7 @@ func (s *Server) MyProfile(_ context.Context, req *pb.GetProfileInfoRequest) (*p
 		Id:           user.Id,
 		Nickname:     user.Nickname,
 		Username:     user.Username,
+		Bio:          user.Bio,
 		Avatar:       user.AvatarPath,
 		Banner:       user.BannerPath,
 		RegisteredAt: user.RegisterDate.Format("2006-01-02T15:04:05Z"),

@@ -3,12 +3,14 @@ package grpc_server
 import (
 	"context"
 	"fmt"
+	"github.com/gocql/gocql"
 	"google.golang.org/protobuf/types/known/emptypb"
 	pb "proto/scyllapb"
 	"results/succ"
 	"scylla_db/internal/db/queries"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Server struct {
@@ -94,6 +96,52 @@ func (s *Server) UploadMessages(_ context.Context, req *pb.UploadMessagesRequest
 	}
 
 	return &pb.BaseResultResponse{Result: succ.Ok}, nil
+}
+
+func (s *Server) GetChats(_ context.Context, req *pb.UserId) (*pb.ChatsResponse, error) {
+	userId := req.UserId
+
+	chats, err := queries.GetUserChats(userId)
+	if err != nil {
+		return &pb.ChatsResponse{
+			Error: err.Error(),
+		}, nil
+	}
+
+	var pbChats []*pb.Chats
+
+	for _, chat := range chats {
+		pbChat := &pb.Chats{}
+
+		if chatId, ok := chat["chat_id"].(gocql.UUID); ok {
+			pbChat.ChatId = chatId.String()
+		}
+
+		if lastMessageId, ok := chat["last_message_id"].(*gocql.UUID); ok && lastMessageId != nil {
+			message, err := queries.GetMessageById(*lastMessageId)
+			if err == nil {
+				pbChat.LastMessage = &pb.Message{
+					MessageId: message.Id.String(),
+					ChatId:    message.ChatId.String(),
+					SenderId:  message.SenderId,
+					Content:   message.Content,
+					CreatedAt: message.CreatedAt.Format(time.RFC3339),
+					Edited:    message.Edited,
+					Deleted:   message.Deleted,
+				}
+			}
+		}
+
+		if participants, ok := chat["participants"].([]int64); ok {
+			pbChat.Participants = participants
+		}
+
+		pbChats = append(pbChats, pbChat)
+	}
+
+	return &pb.ChatsResponse{
+		Chats: pbChats,
+	}, nil
 }
 
 func (s *Server) Ping(_ context.Context, _ *emptypb.Empty) (*pb.BaseResultResponse, error) {

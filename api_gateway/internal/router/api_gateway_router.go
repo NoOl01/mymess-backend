@@ -50,6 +50,12 @@ func Router(router *gin.Engine,
 
 			search.GET("/profiles", searchController.SearchUser)
 		}
+		chat := api.Group("/chat")
+		{
+			chatController := controllers.ChatController{AuthClient: client, ScyllaClient: scyllaClient}
+
+			chat.GET("/get_chats", chatController.GetChatHistory)
+		}
 		if api_storage.Env.DebugMode {
 			api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		}

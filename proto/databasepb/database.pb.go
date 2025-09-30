@@ -475,9 +475,10 @@ type FindProfileBody struct {
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Nickname      string                 `protobuf:"bytes,2,opt,name=nickname,proto3" json:"nickname,omitempty"`
 	Username      string                 `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
-	Avatar        string                 `protobuf:"bytes,4,opt,name=avatar,proto3" json:"avatar,omitempty"`
-	Banner        string                 `protobuf:"bytes,5,opt,name=banner,proto3" json:"banner,omitempty"`
-	RegisteredAt  string                 `protobuf:"bytes,6,opt,name=registered_at,json=registeredAt,proto3" json:"registered_at,omitempty"`
+	Bio           string                 `protobuf:"bytes,4,opt,name=bio,proto3" json:"bio,omitempty"`
+	Avatar        string                 `protobuf:"bytes,5,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	Banner        string                 `protobuf:"bytes,6,opt,name=banner,proto3" json:"banner,omitempty"`
+	RegisteredAt  string                 `protobuf:"bytes,7,opt,name=registered_at,json=registeredAt,proto3" json:"registered_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -529,6 +530,13 @@ func (x *FindProfileBody) GetNickname() string {
 func (x *FindProfileBody) GetUsername() string {
 	if x != nil {
 		return x.Username
+	}
+	return ""
+}
+
+func (x *FindProfileBody) GetBio() string {
+	if x != nil {
+		return x.Bio
 	}
 	return ""
 }
@@ -739,14 +747,15 @@ const file_proto_database_proto_rawDesc = "" +
 	"\x06result\x18\x01 \x01(\tR\x06result\">\n" +
 	"\fAuthResponse\x12\x16\n" +
 	"\x06userId\x18\x01 \x01(\tR\x06userId\x12\x16\n" +
-	"\x06result\x18\x02 \x01(\tR\x06result\"\xae\x01\n" +
+	"\x06result\x18\x02 \x01(\tR\x06result\"\xc0\x01\n" +
 	"\x0fFindProfileBody\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\bnickname\x18\x02 \x01(\tR\bnickname\x12\x1a\n" +
-	"\busername\x18\x03 \x01(\tR\busername\x12\x16\n" +
-	"\x06avatar\x18\x04 \x01(\tR\x06avatar\x12\x16\n" +
-	"\x06banner\x18\x05 \x01(\tR\x06banner\x12#\n" +
-	"\rregistered_at\x18\x06 \x01(\tR\fregisteredAt\"Z\n" +
+	"\busername\x18\x03 \x01(\tR\busername\x12\x10\n" +
+	"\x03bio\x18\x04 \x01(\tR\x03bio\x12\x16\n" +
+	"\x06avatar\x18\x05 \x01(\tR\x06avatar\x12\x16\n" +
+	"\x06banner\x18\x06 \x01(\tR\x06banner\x12#\n" +
+	"\rregistered_at\x18\a \x01(\tR\fregisteredAt\"Z\n" +
 	"\x13FindProfileResponse\x12-\n" +
 	"\x04body\x18\x01 \x03(\v2\x19.database.FindProfileBodyR\x04body\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\"]\n" +

@@ -114,3 +114,10 @@ func MyProfile(client authpb.AuthServiceClient, token string) (*authpb.MyProfile
 		Token: token,
 	})
 }
+
+func GetUserId(client authpb.AuthServiceClient, token string) (*authpb.BaseResultResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	return client.GetUserId(ctx, &authpb.Token{AccessToken: token})
+}

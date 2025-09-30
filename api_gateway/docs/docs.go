@@ -191,6 +191,26 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/chat/get_chats": {
+            "get": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "получение списка чатов",
+                "responses": {}
+            }
+        },
         "/ping": {
             "get": {
                 "description": "Публичный запрос, который клиент отправляет при запуске. Возвращает статус сервисов.",

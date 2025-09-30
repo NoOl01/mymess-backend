@@ -30,7 +30,11 @@ func main() {
 	api_storage.LoadEnv()
 
 	r := gin.Default()
-	r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+		AllowMethods:    []string{"GET", "POST"},
+		AllowHeaders:    []string{"Origin", "Content-type", "Accept", "Authorization"},
+	}))
 
 	if !api_storage.Env.DebugMode {
 		gin.SetMode(gin.ReleaseMode)
@@ -75,7 +79,7 @@ func main() {
 	addConn(profileConn)
 
 	scyllaClient, scyllaConn, err := api_grpc_client.GrpcClientConnect(
-		api_grpc_client.Connect(api_storage.Env.DbHost, api_storage.Env.DbPort, scyllapb.NewScyllaServiceClient),
+		api_grpc_client.Connect(api_storage.Env.ScyllaServiceHost, api_storage.Env.ScyllaServicePort, scyllapb.NewScyllaServiceClient),
 	)
 	if err != nil {
 		log.Println(err.Error())

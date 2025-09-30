@@ -210,10 +210,30 @@ func (s *Server) MyProfile(_ context.Context, req *pb.MyProfileRequest) (*pb.MyP
 		Id:           resp.Body.Id,
 		Nickname:     resp.Body.Nickname,
 		Username:     resp.Body.Username,
+		Bio:          resp.Body.Bio,
 		Avatar:       resp.Body.Avatar,
 		Banner:       resp.Body.Banner,
 		RegisteredAt: resp.Body.RegisteredAt,
 	}}, nil
+}
+
+func (s *Server) GetUserId(_ context.Context, req *pb.Token) (*pb.BaseResultResponse, error) {
+	token := req.AccessToken
+
+	if token == "" {
+		return &pb.BaseResultResponse{Result: errs.MissingToken.Error()}, nil
+	}
+
+	userId, err := jwt.ValidateJwt(token)
+	if err != nil {
+		return &pb.BaseResultResponse{
+			Result: err.Error(),
+		}, err
+	}
+
+	return &pb.BaseResultResponse{
+		Result: userId,
+	}, nil
 }
 
 func (s *Server) Ping(_ context.Context, _ *emptypb.Empty) (*pb.BaseResultResponse, error) {

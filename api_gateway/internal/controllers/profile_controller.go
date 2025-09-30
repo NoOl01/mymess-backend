@@ -10,6 +10,7 @@ import (
 	"proto/profilepb"
 	"results/errs"
 	"strconv"
+	"strings"
 )
 
 type ProfileController struct {
@@ -34,6 +35,15 @@ func (profile *ProfileController) UpdateNickname(c *gin.Context) {
 		})
 		return
 	}
+
+	if !strings.HasPrefix(token, "Bearer") {
+		c.JSON(http.StatusUnauthorized, models.BaseResult{
+			Result: nil,
+			Error:  strPointer(errs.InvalidToken.Error()),
+		})
+		return
+	}
+	token = strings.ReplaceAll(token, "Bearer ", "")
 
 	body := models.UpdateProfile{}
 	if err := c.ShouldBindJSON(&body); err != nil && body.Value != "" {
@@ -77,6 +87,15 @@ func (profile *ProfileController) UpdateEmail(c *gin.Context) {
 		return
 	}
 
+	if !strings.HasPrefix(token, "Bearer") {
+		c.JSON(http.StatusUnauthorized, models.BaseResult{
+			Result: nil,
+			Error:  strPointer(errs.InvalidToken.Error()),
+		})
+		return
+	}
+	token = strings.ReplaceAll(token, "Bearer ", "")
+
 	body := models.UpdateProfile{}
 	if err := c.ShouldBindJSON(&body); err != nil && body.Value != "" {
 		c.JSON(http.StatusBadRequest, models.BaseResult{
@@ -118,6 +137,15 @@ func (profile *ProfileController) UpdateBio(c *gin.Context) {
 		})
 		return
 	}
+
+	if !strings.HasPrefix(token, "Bearer") {
+		c.JSON(http.StatusUnauthorized, models.BaseResult{
+			Result: nil,
+			Error:  strPointer(errs.InvalidToken.Error()),
+		})
+		return
+	}
+	token = strings.ReplaceAll(token, "Bearer ", "")
 
 	body := models.UpdateProfile{}
 	if err := c.ShouldBindJSON(&body); err != nil && body.Value != "" {

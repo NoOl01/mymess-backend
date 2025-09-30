@@ -1,67 +1,96 @@
 package queries
 
 import (
-	"fmt"
 	"github.com/gocql/gocql"
 	"scylla_db/internal/db"
 )
 
-func GetChatsByUserId(userId int64) ([]gocql.UUID, error) {
-	iter := db.Session.Query(GetChatsByUserIdQuery, userId).Iter()
-	defer func(iter *gocql.Iter) {
-		if err := iter.Close(); err != nil {
-			fmt.Println(err)
-		}
-	}(iter)
+func GetUserChats(userId int64) ([]map[string]interface{}, error) {
+	var result []map[string]interface{}
+
+	query := "SELECT chat_id FROM chat_participants WHERE user_id = ?"
+	iter := db.Session.Query(query, userId).Iter()
 
 	var chatId gocql.UUID
-	chatIds := make([]gocql.UUID, 0, 1000)
+	var chatIds []gocql.UUID
 
 	for iter.Scan(&chatId) {
 		chatIds = append(chatIds, chatId)
 	}
 
-	return chatIds, nil
-}
-
-func GetPrivatesChatById(chatId []gocql.UUID) ([]db.PrivateChat, error) {
-	iter := db.Session.Query(GetPrivateChatByIdQuery, chatId).Iter()
-	defer func(iter *gocql.Iter) {
-		if err := iter.Close(); err != nil {
-			fmt.Println(err)
-		}
-	}(iter)
-
-	chats := make([]db.PrivateChat, 0, 1000)
-
-	for {
-		var chat db.PrivateChat
-		if !iter.Scan(&chat) {
-			break
-		}
-		chats = append(chats, chat)
+	if err := iter.Close(); err != nil {
+		return nil, err
 	}
 
-	return chats, nil
-}
+	for _, chatId := range chatIds {
+		chatInfo := make(map[string]interface{})
+		chatInfo["chat_id"] = chatId
 
-func GetGroupChatsById(chatId []gocql.UUID) ([]db.GroupChat, error) {
-	iter := db.Session.Query(GetGroupChatByIdQuery, chatId).Iter()
-	defer func(iter *gocql.Iter) {
-		if err := iter.Close(); err != nil {
-			fmt.Println(err)
+		var lastMessageId *gocql.UUID
+		err := db.Session.Query("SELECT last_message_id FROM private_chats WHERE id = ?", chatId).Scan(&lastMessageId)
+
+		if err == nil {
+			chatInfo["last_message_id"] = lastMessageId
+
+			var participants []int64
+			participantsQuery := "SELECT user_id FROM chat_participants WHERE chat_id = ?"
+			participantsIter := db.Session.Query(participantsQuery, chatId).Iter()
+
+			var participantId int64
+			for participantsIter.Scan(&participantId) {
+				if participantId != userId {
+					participants = append(participants, participantId)
+				}
+			}
+			participantsIter.Close()
+
+			chatInfo["participants"] = participants
+		} else {
+			err = db.Session.Query("SELECT last_message_id FROM group_chats WHERE id = ?", chatId).Scan(&lastMessageId)
+
+			if err == nil {
+				chatInfo["last_message_id"] = lastMessageId
+
+				var participants []int64
+				participantsQuery := "SELECT user_id FROM chat_participants WHERE chat_id = ?"
+				participantsIter := db.Session.Query(participantsQuery, chatId).Iter()
+
+				var participantId int64
+				for participantsIter.Scan(&participantId) {
+					participants = append(participants, participantId)
+				}
+				participantsIter.Close()
+
+				chatInfo["participants"] = participants
+			} else {
+				continue
+			}
 		}
-	}(iter)
 
-	chats := make([]db.GroupChat, 0, 1000)
-
-	for {
-		var chat db.GroupChat
-		if !iter.Scan(&chat) {
-			break
-		}
-		chats = append(chats, chat)
+		result = append(result, chatInfo)
 	}
 
-	return chats, nil
+	return result, nil
+}
+
+func GetMessageById(messageId gocql.UUID) (*db.Message, error) {
+	query := "SELECT * FROM messages WHERE message_id = ?"
+
+	var message db.Message
+	err := db.Session.Query(query, messageId).Scan(
+		&message.Id,
+		&message.ChatId,
+		&message.SenderId,
+		&message.Content,
+		&message.CreatedAt,
+		&message.Edited,
+		&message.Deleted,
+		&message.DeletedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &message, nil
 }

@@ -9,6 +9,7 @@ option go_package = "proto/scyllapb";
 
 service ScyllaService {
   rpc UploadMessages (UploadMessagesRequest) returns (BaseResultResponse);
+  rpc GetChats (UserId) returns (ChatsResponse);
 
   rpc Ping (google.protobuf.Empty) returns (BaseResultResponse);
 }
@@ -25,7 +26,32 @@ message UploadMessagesRequest {
   repeated ChatMessage messages = 1;
 }
 
+message UserId {
+  int64 user_id = 1;
+}
+
 //Responses
 message BaseResultResponse {
   string result = 1;
+}
+
+message Message {
+  string message_id = 1;
+  string chat_id = 2;
+  int64 sender_id = 3;
+  string content = 4;
+  string created_at = 5;
+  bool edited = 6;
+  bool deleted = 7;
+}
+
+message Chats {
+  string chat_id = 1;
+  Message last_message = 2;
+  repeated int64 participants = 3;
+}
+
+message ChatsResponse {
+  repeated Chats chats = 1;
+  string error = 2;
 }

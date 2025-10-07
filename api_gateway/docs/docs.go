@@ -365,6 +365,30 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/search/profiles_by_id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "summary": "Поиск пользователей по id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id пользователя",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/ws": {
             "get": {
                 "produces": [

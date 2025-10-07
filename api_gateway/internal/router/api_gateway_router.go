@@ -49,6 +49,7 @@ func Router(router *gin.Engine,
 			searchController := controllers.SearchController{Client: dbClient}
 
 			search.GET("/profiles", searchController.SearchUser)
+			search.GET("/profile_by_id", searchController.SearchById)
 		}
 		chat := api.Group("/chat")
 		{

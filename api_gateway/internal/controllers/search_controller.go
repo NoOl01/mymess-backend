@@ -53,7 +53,7 @@ func (search *SearchController) SearchUser(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param username query string true "id пользователя"
-// @Router       /search/profiles_by_id [get]
+// @Router       /search/profile_by_id [get]
 func (search *SearchController) SearchById(c *gin.Context) {
 	idStr := c.Query("id")
 	if idStr == "" {

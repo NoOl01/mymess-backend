@@ -17,6 +17,7 @@ type EnvStorage struct {
 	ProfileServiceHost string
 	ProfileServicePort string
 	DebugMode          bool
+	JwtSecret          string
 }
 
 var Env = &EnvStorage{}
@@ -39,4 +40,5 @@ func LoadEnv() {
 	Env.ProfileServicePort = os.Getenv("PROFILE_SERVICE_PORT")
 	Env.ApiPort = os.Getenv("API_PORT")
 	Env.DebugMode = os.Getenv("DEBUG_MODE") == "true"
+	Env.JwtSecret = os.Getenv("JWT_SECRET")
 }

@@ -180,6 +180,50 @@ func (x *UserId) GetUserId() int64 {
 	return 0
 }
 
+type ChatId struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ChatId        string                 `protobuf:"bytes,1,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChatId) Reset() {
+	*x = ChatId{}
+	mi := &file_proto_scylla_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChatId) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChatId) ProtoMessage() {}
+
+func (x *ChatId) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_scylla_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChatId.ProtoReflect.Descriptor instead.
+func (*ChatId) Descriptor() ([]byte, []int) {
+	return file_proto_scylla_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ChatId) GetChatId() string {
+	if x != nil {
+		return x.ChatId
+	}
+	return ""
+}
+
 // Responses
 type BaseResultResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -190,7 +234,7 @@ type BaseResultResponse struct {
 
 func (x *BaseResultResponse) Reset() {
 	*x = BaseResultResponse{}
-	mi := &file_proto_scylla_proto_msgTypes[3]
+	mi := &file_proto_scylla_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -202,7 +246,7 @@ func (x *BaseResultResponse) String() string {
 func (*BaseResultResponse) ProtoMessage() {}
 
 func (x *BaseResultResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scylla_proto_msgTypes[3]
+	mi := &file_proto_scylla_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -215,7 +259,7 @@ func (x *BaseResultResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BaseResultResponse.ProtoReflect.Descriptor instead.
 func (*BaseResultResponse) Descriptor() ([]byte, []int) {
-	return file_proto_scylla_proto_rawDescGZIP(), []int{3}
+	return file_proto_scylla_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *BaseResultResponse) GetResult() string {
@@ -240,7 +284,7 @@ type Message struct {
 
 func (x *Message) Reset() {
 	*x = Message{}
-	mi := &file_proto_scylla_proto_msgTypes[4]
+	mi := &file_proto_scylla_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -252,7 +296,7 @@ func (x *Message) String() string {
 func (*Message) ProtoMessage() {}
 
 func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scylla_proto_msgTypes[4]
+	mi := &file_proto_scylla_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -265,7 +309,7 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
 func (*Message) Descriptor() ([]byte, []int) {
-	return file_proto_scylla_proto_rawDescGZIP(), []int{4}
+	return file_proto_scylla_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Message) GetMessageId() string {
@@ -328,7 +372,7 @@ type Chats struct {
 
 func (x *Chats) Reset() {
 	*x = Chats{}
-	mi := &file_proto_scylla_proto_msgTypes[5]
+	mi := &file_proto_scylla_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -340,7 +384,7 @@ func (x *Chats) String() string {
 func (*Chats) ProtoMessage() {}
 
 func (x *Chats) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scylla_proto_msgTypes[5]
+	mi := &file_proto_scylla_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -353,7 +397,7 @@ func (x *Chats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Chats.ProtoReflect.Descriptor instead.
 func (*Chats) Descriptor() ([]byte, []int) {
-	return file_proto_scylla_proto_rawDescGZIP(), []int{5}
+	return file_proto_scylla_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Chats) GetChatId() string {
@@ -387,7 +431,7 @@ type ChatsResponse struct {
 
 func (x *ChatsResponse) Reset() {
 	*x = ChatsResponse{}
-	mi := &file_proto_scylla_proto_msgTypes[6]
+	mi := &file_proto_scylla_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -399,7 +443,7 @@ func (x *ChatsResponse) String() string {
 func (*ChatsResponse) ProtoMessage() {}
 
 func (x *ChatsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_scylla_proto_msgTypes[6]
+	mi := &file_proto_scylla_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -412,7 +456,7 @@ func (x *ChatsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChatsResponse.ProtoReflect.Descriptor instead.
 func (*ChatsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_scylla_proto_rawDescGZIP(), []int{6}
+	return file_proto_scylla_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ChatsResponse) GetChats() []*Chats {
@@ -423,6 +467,58 @@ func (x *ChatsResponse) GetChats() []*Chats {
 }
 
 func (x *ChatsResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type ChatHistoryResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Messages      []*Message             `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
+	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChatHistoryResponse) Reset() {
+	*x = ChatHistoryResponse{}
+	mi := &file_proto_scylla_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChatHistoryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChatHistoryResponse) ProtoMessage() {}
+
+func (x *ChatHistoryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_scylla_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChatHistoryResponse.ProtoReflect.Descriptor instead.
+func (*ChatHistoryResponse) Descriptor() ([]byte, []int) {
+	return file_proto_scylla_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ChatHistoryResponse) GetMessages() []*Message {
+	if x != nil {
+		return x.Messages
+	}
+	return nil
+}
+
+func (x *ChatHistoryResponse) GetError() string {
 	if x != nil {
 		return x.Error
 	}
@@ -442,7 +538,9 @@ const file_proto_scylla_proto_rawDesc = "" +
 	"\x15UploadMessagesRequest\x12/\n" +
 	"\bmessages\x18\x01 \x03(\v2\x13.scylla.ChatMessageR\bmessages\"!\n" +
 	"\x06UserId\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\",\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"!\n" +
+	"\x06ChatId\x12\x17\n" +
+	"\achat_id\x18\x01 \x01(\tR\x06chatId\",\n" +
 	"\x12BaseResultResponse\x12\x16\n" +
 	"\x06result\x18\x01 \x01(\tR\x06result\"\xc9\x01\n" +
 	"\aMessage\x12\x1d\n" +
@@ -461,10 +559,14 @@ const file_proto_scylla_proto_rawDesc = "" +
 	"\fparticipants\x18\x03 \x03(\x03R\fparticipants\"J\n" +
 	"\rChatsResponse\x12#\n" +
 	"\x05chats\x18\x01 \x03(\v2\r.scylla.ChatsR\x05chats\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error2\xcb\x01\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\"X\n" +
+	"\x13ChatHistoryResponse\x12+\n" +
+	"\bmessages\x18\x01 \x03(\v2\x0f.scylla.MessageR\bmessages\x12\x14\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error2\x8a\x02\n" +
 	"\rScyllaService\x12K\n" +
 	"\x0eUploadMessages\x12\x1d.scylla.UploadMessagesRequest\x1a\x1a.scylla.BaseResultResponse\x121\n" +
-	"\bGetChats\x12\x0e.scylla.UserId\x1a\x15.scylla.ChatsResponse\x12:\n" +
+	"\bGetChats\x12\x0e.scylla.UserId\x1a\x15.scylla.ChatsResponse\x12=\n" +
+	"\x0eGetChatHistory\x12\x0e.scylla.ChatId\x1a\x1b.scylla.ChatHistoryResponse\x12:\n" +
 	"\x04Ping\x12\x16.google.protobuf.Empty\x1a\x1a.scylla.BaseResultResponseB\x10Z\x0eproto/scyllapbb\x06proto3"
 
 var (
@@ -479,34 +581,39 @@ func file_proto_scylla_proto_rawDescGZIP() []byte {
 	return file_proto_scylla_proto_rawDescData
 }
 
-var file_proto_scylla_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_proto_scylla_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_proto_scylla_proto_goTypes = []any{
 	(*ChatMessage)(nil),           // 0: scylla.ChatMessage
 	(*UploadMessagesRequest)(nil), // 1: scylla.UploadMessagesRequest
 	(*UserId)(nil),                // 2: scylla.UserId
-	(*BaseResultResponse)(nil),    // 3: scylla.BaseResultResponse
-	(*Message)(nil),               // 4: scylla.Message
-	(*Chats)(nil),                 // 5: scylla.Chats
-	(*ChatsResponse)(nil),         // 6: scylla.ChatsResponse
-	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),         // 8: google.protobuf.Empty
+	(*ChatId)(nil),                // 3: scylla.ChatId
+	(*BaseResultResponse)(nil),    // 4: scylla.BaseResultResponse
+	(*Message)(nil),               // 5: scylla.Message
+	(*Chats)(nil),                 // 6: scylla.Chats
+	(*ChatsResponse)(nil),         // 7: scylla.ChatsResponse
+	(*ChatHistoryResponse)(nil),   // 8: scylla.ChatHistoryResponse
+	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 10: google.protobuf.Empty
 }
 var file_proto_scylla_proto_depIdxs = []int32{
-	7, // 0: scylla.ChatMessage.time:type_name -> google.protobuf.Timestamp
-	0, // 1: scylla.UploadMessagesRequest.messages:type_name -> scylla.ChatMessage
-	4, // 2: scylla.Chats.last_message:type_name -> scylla.Message
-	5, // 3: scylla.ChatsResponse.chats:type_name -> scylla.Chats
-	1, // 4: scylla.ScyllaService.UploadMessages:input_type -> scylla.UploadMessagesRequest
-	2, // 5: scylla.ScyllaService.GetChats:input_type -> scylla.UserId
-	8, // 6: scylla.ScyllaService.Ping:input_type -> google.protobuf.Empty
-	3, // 7: scylla.ScyllaService.UploadMessages:output_type -> scylla.BaseResultResponse
-	6, // 8: scylla.ScyllaService.GetChats:output_type -> scylla.ChatsResponse
-	3, // 9: scylla.ScyllaService.Ping:output_type -> scylla.BaseResultResponse
-	7, // [7:10] is the sub-list for method output_type
-	4, // [4:7] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	9,  // 0: scylla.ChatMessage.time:type_name -> google.protobuf.Timestamp
+	0,  // 1: scylla.UploadMessagesRequest.messages:type_name -> scylla.ChatMessage
+	5,  // 2: scylla.Chats.last_message:type_name -> scylla.Message
+	6,  // 3: scylla.ChatsResponse.chats:type_name -> scylla.Chats
+	5,  // 4: scylla.ChatHistoryResponse.messages:type_name -> scylla.Message
+	1,  // 5: scylla.ScyllaService.UploadMessages:input_type -> scylla.UploadMessagesRequest
+	2,  // 6: scylla.ScyllaService.GetChats:input_type -> scylla.UserId
+	3,  // 7: scylla.ScyllaService.GetChatHistory:input_type -> scylla.ChatId
+	10, // 8: scylla.ScyllaService.Ping:input_type -> google.protobuf.Empty
+	4,  // 9: scylla.ScyllaService.UploadMessages:output_type -> scylla.BaseResultResponse
+	7,  // 10: scylla.ScyllaService.GetChats:output_type -> scylla.ChatsResponse
+	8,  // 11: scylla.ScyllaService.GetChatHistory:output_type -> scylla.ChatHistoryResponse
+	4,  // 12: scylla.ScyllaService.Ping:output_type -> scylla.BaseResultResponse
+	9,  // [9:13] is the sub-list for method output_type
+	5,  // [5:9] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_proto_scylla_proto_init() }
@@ -520,7 +627,7 @@ func file_proto_scylla_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_scylla_proto_rawDesc), len(file_proto_scylla_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

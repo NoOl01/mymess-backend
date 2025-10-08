@@ -94,3 +94,21 @@ func GetMessageById(messageId gocql.UUID) (*db.Message, error) {
 
 	return &message, nil
 }
+
+func GetChatHistory(chatId gocql.UUID) ([]db.Message, error) {
+	query := "SELECT * FROM messages WHERE id = ?"
+	iter := db.Session.Query(query, chatId).Iter()
+
+	var messages []db.Message
+	var msg db.Message
+
+	for iter.Scan(&msg.Id, &msg.ChatId, &msg.SenderId, &msg.Content, &msg.CreatedAt, &msg.Edited, &msg.Deleted, &msg.DeletedAt) {
+		messages = append(messages, msg)
+	}
+
+	if err := iter.Close(); err != nil {
+		return nil, err
+	}
+
+	return messages, nil
+}

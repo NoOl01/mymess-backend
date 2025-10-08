@@ -144,6 +144,40 @@ func (s *Server) GetChats(_ context.Context, req *pb.UserId) (*pb.ChatsResponse,
 	}, nil
 }
 
+func (s *Server) GetChatHistory(_ context.Context, req *pb.ChatId) (*pb.ChatHistoryResponse, error) {
+	chatIdStr := req.ChatId
+	chatId, err := gocql.ParseUUID(chatIdStr)
+	if err != nil {
+		return &pb.ChatHistoryResponse{
+			Error: err.Error(),
+		}, err
+	}
+
+	messages, err := queries.GetChatHistory(chatId)
+	if err != nil {
+		return &pb.ChatHistoryResponse{
+			Error: err.Error(),
+		}, err
+	}
+
+	var pbMessages []*pb.Message
+	for _, m := range messages {
+		pbMessages = append(pbMessages, &pb.Message{
+			MessageId: m.Id.String(),
+			ChatId:    m.ChatId.String(),
+			SenderId:  m.SenderId,
+			Content:   m.Content,
+			CreatedAt: m.CreatedAt.Format(time.RFC3339),
+			Edited:    m.Edited,
+			Deleted:   m.Deleted,
+		})
+	}
+
+	return &pb.ChatHistoryResponse{
+		Messages: pbMessages,
+	}, nil
+}
+
 func (s *Server) Ping(_ context.Context, _ *emptypb.Empty) (*pb.BaseResultResponse, error) {
 	return &pb.BaseResultResponse{Result: succ.Ok}, nil
 }

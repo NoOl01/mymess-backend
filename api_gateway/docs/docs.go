@@ -211,6 +211,35 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/chat/history": {
+            "get": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "получение списка чатов",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ChatId",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/ping": {
             "get": {
                 "description": "Публичный запрос, который клиент отправляет при запуске. Возвращает статус сервисов.",
@@ -341,6 +370,30 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/search/profile_by_id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "summary": "Поиск пользователей по id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id пользователя",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/search/profiles": {
             "get": {
                 "consumes": [
@@ -357,30 +410,6 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Username пользователя",
-                        "name": "username",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/search/profiles_by_id": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "search"
-                ],
-                "summary": "Поиск пользователей по id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id пользователя",
                         "name": "username",
                         "in": "query",
                         "required": true

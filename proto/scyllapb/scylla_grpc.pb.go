@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	ScyllaService_UploadMessages_FullMethodName = "/scylla.ScyllaService/UploadMessages"
 	ScyllaService_GetChats_FullMethodName       = "/scylla.ScyllaService/GetChats"
+	ScyllaService_GetChatHistory_FullMethodName = "/scylla.ScyllaService/GetChatHistory"
 	ScyllaService_Ping_FullMethodName           = "/scylla.ScyllaService/Ping"
 )
 
@@ -31,6 +32,7 @@ const (
 type ScyllaServiceClient interface {
 	UploadMessages(ctx context.Context, in *UploadMessagesRequest, opts ...grpc.CallOption) (*BaseResultResponse, error)
 	GetChats(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*ChatsResponse, error)
+	GetChatHistory(ctx context.Context, in *ChatId, opts ...grpc.CallOption) (*ChatHistoryResponse, error)
 	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error)
 }
 
@@ -62,6 +64,16 @@ func (c *scyllaServiceClient) GetChats(ctx context.Context, in *UserId, opts ...
 	return out, nil
 }
 
+func (c *scyllaServiceClient) GetChatHistory(ctx context.Context, in *ChatId, opts ...grpc.CallOption) (*ChatHistoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChatHistoryResponse)
+	err := c.cc.Invoke(ctx, ScyllaService_GetChatHistory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *scyllaServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BaseResultResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BaseResultResponse)
@@ -78,6 +90,7 @@ func (c *scyllaServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts 
 type ScyllaServiceServer interface {
 	UploadMessages(context.Context, *UploadMessagesRequest) (*BaseResultResponse, error)
 	GetChats(context.Context, *UserId) (*ChatsResponse, error)
+	GetChatHistory(context.Context, *ChatId) (*ChatHistoryResponse, error)
 	Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error)
 	mustEmbedUnimplementedScyllaServiceServer()
 }
@@ -94,6 +107,9 @@ func (UnimplementedScyllaServiceServer) UploadMessages(context.Context, *UploadM
 }
 func (UnimplementedScyllaServiceServer) GetChats(context.Context, *UserId) (*ChatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChats not implemented")
+}
+func (UnimplementedScyllaServiceServer) GetChatHistory(context.Context, *ChatId) (*ChatHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChatHistory not implemented")
 }
 func (UnimplementedScyllaServiceServer) Ping(context.Context, *emptypb.Empty) (*BaseResultResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
@@ -155,6 +171,24 @@ func _ScyllaService_GetChats_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ScyllaService_GetChatHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ScyllaServiceServer).GetChatHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ScyllaService_GetChatHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ScyllaServiceServer).GetChatHistory(ctx, req.(*ChatId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ScyllaService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -187,6 +221,10 @@ var ScyllaService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetChats",
 			Handler:    _ScyllaService_GetChats_Handler,
+		},
+		{
+			MethodName: "GetChatHistory",
+			Handler:    _ScyllaService_GetChatHistory_Handler,
 		},
 		{
 			MethodName: "Ping",

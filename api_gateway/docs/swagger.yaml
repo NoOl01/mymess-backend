@@ -180,6 +180,24 @@ paths:
       summary: получение списка чатов
       tags:
       - chat
+  /chat/history:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ChatId
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Token: []
+      summary: получение списка чатов
+      tags:
+      - chat
   /ping:
     get:
       description: Публичный запрос, который клиент отправляет при запуске. Возвращает
@@ -263,6 +281,22 @@ paths:
       summary: Обновить nickname
       tags:
       - profile
+  /search/profile_by_id:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: id пользователя
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Поиск пользователей по id
+      tags:
+      - search
   /search/profiles:
     get:
       consumes:
@@ -277,22 +311,6 @@ paths:
       - application/json
       responses: {}
       summary: Поиск пользователей по username
-      tags:
-      - search
-  /search/profiles_by_id:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: id пользователя
-        in: query
-        name: username
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Поиск пользователей по id
       tags:
       - search
   /ws:
